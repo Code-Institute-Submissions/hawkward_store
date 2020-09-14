@@ -75,7 +75,7 @@
                     <a href="#">Information</a>
                 </li>
                 <li>
-                    <a href="#">New Additions</a>
+                    <a href="{% url 'products' %}">New Additions</a>
                 </li>
                 <li>
                     <a href="#dogsSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Dogs</a>
@@ -155,7 +155,7 @@
                                     {% if request.user.is_authenticated %}
                                     {% if request.user.is_superuser %}
                                     <li>
-                                        <a href="#" class="dropdown-item btn btn-navbar my-2">Product Management</a>
+                                        <a href="{% url 'add_product' %}" class="dropdown-item btn btn-navbar my-2">Product Management</a>
                                     </li>
                                     {% endif %}
                                     <li>
