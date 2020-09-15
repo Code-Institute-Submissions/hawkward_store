@@ -25,9 +25,27 @@
             <form method="POST" action="{% url 'add_category' %}" class="form mb-2" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% for field in categoryForm %}
-                <p>{{ field }}</p>
-                <p>{{ field.name }}</p>
+                <div class="row mb-2">
+                    <div class="col">
+                        {{ field.name }}
+                    </div>
+                    <div class="col-8">
+                        {{ field }}
+                    </div>
+                </div>
                 {% endfor %}
+                {% if categoryForm.errors %}
+                <ul>
+                    {% for field in form %}
+                    {% for error in field.errors %}
+                    <li>{{ error|escape }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    <li>{{ error|escape }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
                 <button class="btn btn-success" type="submit">Save</button>
             </form>
         </div>
