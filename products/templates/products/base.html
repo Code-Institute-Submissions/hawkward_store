@@ -7,5 +7,54 @@
             <p>TESTING</p>
         </div>
     </div>
+    <div class="row">
+        {% for product in products %}
+        <div class="col-6 mb-5">
+            <div class="card" style="height: 25rem;">
+                {% if product.image %}
+                <a href="#">
+                    <img class="card-img-top" src="{{ product.image }}" alt="{{ product.name }}">
+                </a>
+                {% elif product.image_url %}
+                <a href="#">
+                    <img class="card-img-top" src="{{ product.image_url }}" alt="{{ product.name }}">
+                </a>
+                {% else %}
+                <a href="#">
+                    <img class="card-img-top" src="#" alt="{{ product.name }}">
+                </a>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text text-truncate">{{ product.description }}</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">${{ product.price }}</li>
+                    <li class="list-group-item">{{ product.category.friendly_name }}</li>
+                    {% if product.rating %}
+                    <li class="list-group-item">{{ product.rating }}</li>
+                    {% else %}
+                    <li class="list-group-item">No Rating</li>
+                    {% endif %}
+                </ul>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 text-left">
+                            <a href="#" class="card-link btn btn-navbar">Product Info</a>
+                        </div>
+                        <div class="col-6 text-right">
+                            <a href="#" class="card-link btn btn-navbar">Add to cart</a>
+                        </div>
+                        {% if request.user.is_superuser %}
+                        <div class="col text-center">
+                            <a href="{% url 'edit_product' product.id %}" class="card-link btn btn-danger">Edit</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

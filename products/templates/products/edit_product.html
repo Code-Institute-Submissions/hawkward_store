@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 {% block content %}
-<div class="container-fluid">
+<div class="container">
     <div class="row mb-4">
         <div class="col-12">
             <h2 class="mb-4">Product Management</h2>
         </div>
         <div class="col-8">
-            <h5>Add a product</h5>
+            <h5>Edit a product</h5>
             <hr>
         </div>
         <div class="col-4">
@@ -17,13 +17,13 @@
     </div>
     <div class="row">
         <div class="col-8">
-            <form method="POST" action="{% url 'add_product' %}" class="form mb-2" enctype="multipart/form-data">
+            <form method="POST" action="{% url 'edit_product' product.id %}" class="form mb-2" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% for field in productForm %}
                 <p>{{ field }}</p>
                 <p>{{ field.name }}</p>
                 {% endfor %}
-                <button class="btn btn-success" type="submit">Save</button>
+                <button class="btn btn-success" type="submit">Update</button>
             </form>
         </div>
         <div class="col-4">
