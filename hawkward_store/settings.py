@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     # local
     'home',
     'products',
+    'users',
 ]
 
 MIDDLEWARE = [

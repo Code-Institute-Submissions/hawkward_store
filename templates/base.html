@@ -162,7 +162,7 @@
                                     </li>
                                     {% endif %}
                                     <li>
-                                        <a href="#" class="dropdown-item btn btn-navbar my-2">My Profile</a>
+                                        <a href="{% url 'users' %}" class="dropdown-item btn btn-navbar my-2">My Profile</a>
                                     </li>
                                     <li>
                                         <a href="{% url 'account_logout' %}"
@@ -191,15 +191,6 @@
 
             {% block page_header %}
             {% endblock %}
-            <div class="container">
-                <div class="row">
-                    <div class="col">
-                        {% if user.is_authenticated %}
-                            Hello, {{ user.username }}
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
             {% block content %}
             {% endblock %}
             <div class="col">
