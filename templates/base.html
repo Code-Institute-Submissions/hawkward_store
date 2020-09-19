@@ -95,8 +95,7 @@
                     </ul>
                 </li>
                 <li>
-                    <a href="#catsSubmenu" data-toggle="collapse" aria-expanded="false"
-                        class="dropdown-toggle">Cats</a>
+                    <a href="#catsSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Cats</a>
                     <ul class="collapse list-unstyled" id="catsSubmenu">
                         <li>
                             <a href="#">Food</a>
@@ -131,16 +130,16 @@
         <div id="content">
             <nav class="navbar navbar-expand-lg">
                 <div class="container-fluid">
-
-                    <button type="button" id="sidebarCollapse" class="btn btn-navbar">
-                        <i class="fas fa-align-left"></i>
-                        <span>Show Products</span>
-                    </button>
-                    <button class="btn btn-navbar my-2 d-inline-block d-lg-none ml-auto" type="button"
-                        data-toggle="collapse" data-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <i class="fas fa-align-justify"></i>
-                    </button>
+                        <button type="button" id="sidebarCollapse" class="btn btn-navbar">
+                            <i class="fas fa-align-left"></i>
+                            <span>Show Products</span>
+                        </button>
+                        <div class="d-flex col d-lg-none justify-content-center">Hawkward Store</div>
+                        <button class="btn btn-navbar my-2 d-inline-block d-lg-none ml-auto" type="button"
+                            data-toggle="collapse" data-target="#navbarSupportedContent"
+                            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <i class="fas fa-align-justify"></i>
+                        </button>
 
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul id="navUl" class="navbar-nav ml-auto">
@@ -158,7 +157,8 @@
                                     {% if request.user.is_authenticated %}
                                     {% if request.user.is_superuser %}
                                     <li>
-                                        <a href="{% url 'add_product' %}" class="dropdown-item btn btn-navbar my-2">Product Management</a>
+                                        <a href="{% url 'add_product' %}"
+                                            class="dropdown-item btn btn-navbar my-2">Product Management</a>
                                     </li>
                                     {% endif %}
                                     <li>
@@ -191,7 +191,15 @@
 
             {% block page_header %}
             {% endblock %}
-
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        {% if user.is_authenticated %}
+                            Hello, {{ user.username }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
             {% block content %}
             {% endblock %}
             <div class="col">

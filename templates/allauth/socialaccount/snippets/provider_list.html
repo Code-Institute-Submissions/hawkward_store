@@ -2,19 +2,19 @@
 
 {% get_providers as socialaccount_providers %}
 
-{% for provider in socialaccount_providers %}
-{% if provider.id == "openid" %}
-{% for brand in provider.get_brands %}
-<li>
-  <a title="{{brand.name}}" 
-     class="socialaccount_provider {{provider.id}} {{brand.id}}" 
-     href="{% provider_login_url provider.id openid=brand.openid_url process=process %}"
-     >{{brand.name}}</a>
+<li class="list-unstyled mb-2 text-center">
+  {% for provider in socialaccount_providers %}
+  {% if provider.id == "openid" %}
+  {% for brand in provider.get_brands %}
+  <a title="{{brand.name}}" class="socialaccount_provider {{provider.id}} {{brand.id}}"
+    href="{% provider_login_url provider.id openid=brand.openid_url process=process %}">
+    <i class="fab fa-{{brand.name|lower}} fa-2x m-3 btn btn-navbar"></i>
+  </a>
+  {% endfor %}
+  {% endif %}
+  <a title="{{provider.name}}" class="socialaccount_provider {{provider.id}}"
+    href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
+    <i class="fab fa-{{provider.name|lower}} fa-2x m-3 btn btn-navbar"></i>
+  </a>
+  {% endfor %}
 </li>
-{% endfor %}
-{% endif %}
-<li>
-  <a title="{{provider.name}}" class="socialaccount_provider {{provider.id}}" 
-     href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">{{provider.name}}</a>
-</li>
-{% endfor %}

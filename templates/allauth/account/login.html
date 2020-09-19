@@ -17,9 +17,9 @@
           {% get_providers as socialaccount_providers %}
 
           {% if socialaccount_providers %}
-          <p>{% blocktrans with site.name as site_name %}Please sign in with one
-            of your existing third party accounts. Or, <a href="{{ signup_url }}">sign up</a>
-            for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
+          <p>{% blocktrans %}Please sign in with one
+            of your existing third party accounts or if you have not created an account yet, then please
+            <a href="{{ signup_url }}" class="btn btn-navbar">Sign Up</a> first.{% endblocktrans %}</p>
 
           <div class="socialaccount_ballot">
 
@@ -27,7 +27,7 @@
               {% include "socialaccount/snippets/provider_list.html" with process="login" %}
             </ul>
 
-            <div class="login-or">{% trans 'or' %}</div>
+            <div class="text-center m-3">{% trans 'or' %}</div>
 
           </div>
 
@@ -47,11 +47,6 @@
               <input name="login" class="form-control" placeholder="{{ form.login.name }}" type="text" id="id_login"
                 required>
             </div>
-            <ul class="mt-3">
-              {% for error in form.login.errors %}
-              <li>{{ error }}</li>
-              {% endfor %}
-            </ul>
             <div class="form-group input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fa fa-lock"></i></span>
@@ -59,25 +54,15 @@
               <input name="password" class="form-control" placeholder="{{ form.password.name }}" type="password"
                 id="id_password" required>
             </div>
-            <ul class="mt-3">
-              {% for error in form.password.errors %}
-              <li>{{ error }}</li>
-              {% endfor %}
-            </ul>
-            <div class="form-check input-group">
+            <div class="form-group input-group">
               <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fa fa-check"></i></span>
                 <span class="input-group-text">Remember me</i></span>
               </div>
               <input name="remember" class="form-control" type="checkbox" id="id_remember">
             </div>
-            <ul class="mt-3">
-              {% for error in form.remember.errors %}
-              <li>{{ error }}</li>
-              {% endfor %}
-            </ul>
             {% if form.errors %}
-            <ul>
+            <ul class="mb-2">
               {% for field in form %}
               {% for error in field.errors %}
               <li>{{ error|escape }}</li>
@@ -94,7 +79,7 @@
               {% endif %}
               <a class="button secondaryAction"
                 href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-              <button class="btn btn-navbar" type="submit">{% trans "Sign In" %}</button>
+              <button class="btn btn-navbar ml-5" type="submit">{% trans "Sign In" %}</button>
             </div>
           </form>
         </article>
