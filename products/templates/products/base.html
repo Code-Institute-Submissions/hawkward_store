@@ -9,7 +9,7 @@
     </div>
     <div class="row">
         {% for product in products %}
-        <div class="col-6 mb-5">
+        <div class="col-12 col-md-6 mb-5">
             <div class="card" style="min-height: 30rem;">
                 {% if product.image %}
                 <a href="{% url 'product_information' product.id %}">
@@ -41,7 +41,7 @@
                             <a href="{% url 'add_item_to_bag' product.id %}" class="card-link btn btn-navbar">Add to cart</a>
                         </div>
                         {% if request.user.is_superuser %}
-                        <div class="col text-center">
+                        <div class="col text-center mt-2">
                             <a href="{% url 'edit_product' product.id %}" class="card-link btn btn-danger">Edit</a>
                         </div>
                         {% endif %}

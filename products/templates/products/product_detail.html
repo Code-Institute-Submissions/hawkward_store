@@ -33,7 +33,7 @@
     </div>
     <div class="row mt-5">
         <div class="col">
-            <form class="form d-flex" action="#" method="POST">
+            <form class="form d-flex" action="{% url 'add_item_to_bag' product.id %}" method="POST">
                 {% csrf_token %}
                 <div class="col mt-4">
                     <button class="btn btn-navbar"><a href="{% url 'products' %}">Back to all Products</a></button>

@@ -12,11 +12,12 @@
     </div>
     <div class="row">
         <div class="col">
-            {% if shopping_bag %}
-            <p>{{ shopping_bag }}</p>
-            {% else %}
-                <h5>Your shopping bag is empty, click <a href="{% url 'products' %}" class="btn btn-navbar">HERE</a> to go back to all products</h5>
-            {% endif %}
+            {% for item in shopping_bag %}
+            <p>{{ item.product.name }}</p>
+            <p>{{ item.product.price }}</p>
+            {% endfor %}
+            <p>Total Cost: {{ total_price }}</p>
+            <p>Total Items: {{ total_products }}</p>
         </div>
     </div>
 </div>
