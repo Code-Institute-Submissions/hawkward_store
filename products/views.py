@@ -9,15 +9,17 @@ from .forms import ProductForm, CategoryForm
 def products(request):
     """ Products page view """
     products = Product.objects.all()
-    query = None
-    categories = None
-    sort = None
-    direction = None
-
     context = {
         'products': products,
     }
     return render(request, 'products/base.html', context)
+
+def product_information(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+    context = {
+        'product': product
+    }
+    return render(request, 'products/product_detail.html', context)
 
 @login_required
 def add_product(request):

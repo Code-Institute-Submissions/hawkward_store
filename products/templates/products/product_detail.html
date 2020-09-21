@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            {% if product.image %}
+            <img src="{{ product.image }}" alt="product_image">
+            {% elif product.image_url %}
+            <img src="{{ product.image_url }}" alt="product_image">
+            {% else %}
+            <p>NO IMAGE</p>
+            {% endif %}
+        </div>
+        <div class="col m-5">
+            <h5>Product Name:</h5>
+            <p>{{ product.name }}</p>
+            <h4>Information:</h4>
+            <p>{{ product.description }}</p>
+            <h4>Category:</h4>
+            <p>{{ product.category }}</p>
+            <h4>Price:</h4>
+            <p>${{ product.price }}</p>
+            <h4>Every 7nth free?:</h4>
+            {% if product.has_giftcard == True %}
+            <p>Yes</p>
+            {% elif product.has_giftcard == False %}
+            <p>No</p>
+            {% else %}
+            <p>No information given. Please Contact us for more information!</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col">
+            <form class="form d-flex" action="#" method="POST">
+                {% csrf_token %}
+                <div class="col mt-4">
+                    <button class="btn btn-navbar"><a href="{% url 'products' %}">Back to all Products</a></button>
+                </div>
+                <div class="col">
+                    <span class="align-middle"><strong>Quantity:</strong></span>
+                    <input class="form-control" type="number" name="quantity" value="1" min="1" max="99"
+                        id="id_qty_{{ product.id }}">
+                </div>
+                <div class="col mt-4 text-right">
+                    <input type="submit" class="btn btn-navbar" value="Add to Bag">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
