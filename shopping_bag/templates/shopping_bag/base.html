@@ -12,9 +12,18 @@
     </div>
     <div class="row">
         <div class="col">
-            {% for item in shopping_bag %}
+            {% for item in products %}
             <p>{{ item.product.name }}</p>
             <p>{{ item.product.price }}</p>
+            <p>{{ item.quantity }}</p>
+            <p>{{ item.product_id }}</p>
+            <form action="{% url 'change_quantity' item.product_id %}" method="POST">
+                {% csrf_token %}
+                <input type="number" min="1" max="99" value="1" name="quantity" id="quantity">
+                <button type="submit" class="btn btn-navbar">Change Amount</button>
+            </form>
+            <button class="btn btn-navbar"><a href="{% url 'delete_item_from_bag' item.product_id %}">Delete all
+                    Items</a></button>
             {% endfor %}
             <p>Total Cost: {{ total_price }}</p>
             <p>Total Items: {{ total_products }}</p>
