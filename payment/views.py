@@ -1,13 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.http import require_POST
+from django.conf import settings
+
 from users.models import Giftcards, UserProfile
 from products.models import Product
 from django.db.models import Q
+
 from users.forms import GiftcardsForm
+from payment.forms import OrderForm
+
 
 # Create your views here.
 
 
-def payment_success(request):
+def check_for_free_items(request):
     shopping_bag = request.session['shopping_bag']
     counter = 0
     for product_id, quantity in shopping_bag.items():
@@ -43,7 +49,23 @@ def payment_success(request):
                 giftcard_q = Giftcards(
                     user=user, product_id=product_id, product_name=product_name, counter=counter)
                 giftcard_q.save()
-    if request.session['free_items']:
-        for product_id, amount in request.session['free_items'].items():
-            print(product_id, amount)
+
+    context = {
+        'OrderForm': OrderForm,
+    }
+    return render(request, 'payment/payment.html', context)
+
+@require_POST
+def payment_processing(request):
+    stripe_public_key = settings.STRIPE_PUBLIC_KEY
+    stripe_secret_key = settings.STRIPE_SECRET_KEY
+
+    if request.method == 'POST':
+        bag = request.session.get('bag', {})
+
+        form_data = {
+            'full_name': request.POST['full_name'],
+            'email': request.POST['email'],
+        }
     return redirect('shopping_bag')
+

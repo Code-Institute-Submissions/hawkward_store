@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block content %}
 <div class="container">
     <div class="row">
@@ -29,7 +30,7 @@
             <p>Total Items: {{ total_products }}</p>
         </div>
         <div class="col">
-            <button class="btn btn-navbar"><a href="{% url 'payment_success' %}">Checkout Success</a></button>
+            <button class="btn btn-navbar"><a href="{% url 'check_for_free_items' %}">Checkout Success</a></button>
         </div>
     </div>
 </div>
