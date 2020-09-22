@@ -67,5 +67,12 @@ def payment_processing(request):
             'full_name': request.POST['full_name'],
             'email': request.POST['email'],
         }
+        order_form = OrderForm(form_data)
+        if order_form.is_valid():
+            order = order_form.save(commit=False)
+            pid = request.POST.get('client_secret').split('_secret')[0]
+            order.stripe_pid = pid
+            order.all_products = json.dumps(bag)
+            order.save()
     return redirect('shopping_bag')
 
