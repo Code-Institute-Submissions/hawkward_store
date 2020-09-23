@@ -40,64 +40,83 @@
                 </a>
             </div>
 
-            <ul class="list-unstyled ">
+            <ul class="list-unstyled" id="sidebarUl">
                 <p class="text-center sidebar-heading">Hawkward Store</p>
                 <li class="text-center ml-1">
                     <span>Newsletter Sign Up!</span>
                     <form action="#">
                         <input type="email" name="newsletterEmail" id="newsletterEmail" placeholder="Email">
-                        <span><button type="submit" class="btn-sidebar"><i class="fab fa-mailchimp"></i></button></span>
+                        <span><button type="submit" class="btn-sidebar"><i class="fab fa-mailchimp fa-2x"></i></button></span>
                     </form>
                 </li>
-                <li class="text-center ml-1">
+                <li class="text-center">
                     <span>Search Website!</span>
-                    <form action="#">
-                        <input type="search" name="searchbar" id="searchbar" placeholder="Search">
-                        <span><button type="submit" class="btn-sidebar"><i class="fas fa-search"></i></button></span>
+                    <form method="GET" action="{% url 'products' %}">
+                        <input type="search" name="q" id="q" placeholder="Search">
+                        <button type="submit" class="btn-sidebar"><i class="fas fa-search fa-lg"></i></button>
                     </form>
                 </li>
                 <li>
-                    <a href="#">Page Information</a>
+                    <form method="GET" action="{% url 'products' %}">
+                        <button type="submit" name="page" class="sidebarNavLink">Page Information</button>
+                    </form>
                 </li>
                 <li>
-                    <a href="{% url 'products' %}">All Products</a>
+                    <form method="GET" action="{% url 'products' %}">
+                        <button type="submit" name="all" class="sidebarNavLink">All Products</button>
+                    </form>
                 </li>
                 <li>
-                    <a href="#">New Additions</a>
+                    <form method="GET" action="{% url 'products' %}">
+                        <button type="submit" name="new" class="sidebarNavLink">New Additions</button>
+                    </form>
                 </li>
                 <li>
-                    <a href="#dogsSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Dogs</a>
+                    <a href="#dogsSubmenu" data-toggle="collapse" aria-expanded="false"
+                        class="dropdown-toggle sidebarNavLink text-center">Dogs</a>
                     <ul class="collapse list-unstyled" id="dogsSubmenu">
                         <li>
-                            <a href="#">Food</a>
+                            <form method="GET" action="{% url 'products' %}">
+                                <button type="submit" name="dog_food" class="text-left size-text">Food</button>
+                            </form>
                         </li>
                         <li>
-                            <a href="#">Toys</a>
+                            <form method="GET" action="{% url 'products' %}">
+                                <button type="submit" name="dog_toys" class="text-left">Toys</button>
+                            </form>
                         </li>
                         <li>
-                            <a href="#">Dog Beds</a>
+                            <form method="GET" action="{% url 'products' %}">
+                                <button type="submit" name="dog_other" class="text-left">Other</button>
+                            </form>
                         </li>
                     </ul>
                 </li>
                 <li>
-                    <a href="#catsSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Cats</a>
+                    <a href="#catsSubmenu" data-toggle="collapse" aria-expanded="false"
+                        class="dropdown-toggle sidebarNavLink text-center">Cats</a>
                     <ul class="collapse list-unstyled" id="catsSubmenu">
                         <li>
-                            <a href="#">Food</a>
+                            <form method="GET" action="{% url 'products' %}">
+                                <button type="submit" name="cat_food" class="text-left">Food</button>
+                            </form>
                         </li>
                         <li>
-                            <a href="#">Toys</a>
+                            <form method="GET" action="{% url 'products' %}">
+                                <button type="submit" name="cat_toys" class="text-left">Toys</button>
+                            </form>
                         </li>
                         <li>
-                            <a href="#">Cat Beds</a>
+                            <form method="GET" action="{% url 'products' %}">
+                                <button type="submit" name="cat_other" class="text-left">Other</button>
+                            </form>
                         </li>
                     </ul>
                 </li>
                 <li>
-                    <a href="#">Leashes</a>
-                </li>
-                <li>
-                    <a href="#">Other</a>
+                    <form method="GET" action="{% url 'products' %}">
+                        <button type="submit" name="other" class="sidebarNavLink">Other</button>
+                    </form>
                 </li>
             </ul>
 
@@ -199,7 +218,7 @@
     <!-- Stripe -->
     <script src="https://js.stripe.com/v3/"></script>
     {% endblock %}
-    
+
     {% block postloadjs %}
     {% endblock %}
 

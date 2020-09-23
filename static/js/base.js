@@ -9,12 +9,22 @@ function scrollToTop() {
     document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
 };
 
-const ul = document.getElementById("navUl");
-const btns = ul.getElementsByClassName("btn");
-for (var i = 0; i < btns.length; i++) {
-    btns[i].addEventListener("click", function () {
+const navUl = document.getElementById("navUl");
+const navBtns = navUl.getElementsByClassName("btn");
+for (var i = 0; i < navBtns.length; i++) {
+    navBtns[i].addEventListener("click", function () {
         const current = document.getElementsByClassName("activeBtnNavbar");
         current[0].className = current[0].className.replace(" activeBtnNavbar", "");
+        this.className += " activeBtnNavbar";
+    });
+};
+
+const sidebarUl = document.getElementById("sidebarUl");
+const sideBtns = sidebarUl.getElementsByClassName("sidebarNavLink");
+for (var i = 0; i < sideBtns.length; i++) {
+    sideBtns[i].addEventListener("click", function () {
+        const current = document.getElementsByClassName("buttonSidebarActive");
+        current[0].className = current[0].className.replace(" buttonSidebarActive", "");
         this.className += " activeBtnNavbar";
     });
 };

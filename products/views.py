@@ -1,6 +1,7 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib.auth.decorators import login_required
 
+from django.db.models import Q
 from .models import Product, Category, Animals
 from .forms import ProductForm, CategoryForm, AnimalsForm
 
@@ -10,9 +11,25 @@ from .forms import ProductForm, CategoryForm, AnimalsForm
 def products(request):
     """ Products page view """
     products = Product.objects.all()
+    query = None
+    if request.GET:
+        if 'q' in request.GET:
+            query = request.GET['q']
+            if not query:
+                return redirect(reverse('products'))
+
+            queries = Q(name__icontains=query) | Q(
+                description__icontains=query)
+            products = products.filter(queries)
+        if 'new' in request.GET:
+                products = Product.objects.filter(price=10.00)        
+        if 'dog_food' in request.GET:
+                products = Product.objects.filter(price=5.99)
+
     context = {
         'products': products,
     }
+
     return render(request, 'products/base.html', context)
 
 
