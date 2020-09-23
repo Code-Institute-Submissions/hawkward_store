@@ -18,13 +18,3 @@ for (var i = 0; i < navBtns.length; i++) {
         this.className += " activeBtnNavbar";
     });
 };
-
-const sidebarUl = document.getElementById("sidebarUl");
-const sideBtns = sidebarUl.getElementsByClassName("sidebarNavLink");
-for (var i = 0; i < sideBtns.length; i++) {
-    sideBtns[i].addEventListener("click", function () {
-        const current = document.getElementsByClassName("buttonSidebarActive");
-        current[0].className = current[0].className.replace(" buttonSidebarActive", "");
-        this.className += " activeBtnNavbar";
-    });
-};

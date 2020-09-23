@@ -10,7 +10,8 @@ from .forms import ProductForm, CategoryForm, AnimalsForm
 
 def products(request):
     """ Products page view """
-    products = Product.objects.all()
+    products = Product.objects.all().order_by('name')
+    active = None
     query = None
     if request.GET:
         if 'q' in request.GET:
@@ -19,15 +20,54 @@ def products(request):
                 return redirect(reverse('products'))
 
             queries = Q(name__icontains=query) | Q(
-                description__icontains=query)
+                description__icontains=query) | Q(
+                    category__name__icontains=query) | Q(
+                        animal__name__icontains=query)
             products = products.filter(queries)
+        if 'all' in request.GET:
+            active = 'all'
+            products = Product.objects.all().order_by('name')
         if 'new' in request.GET:
-                products = Product.objects.filter(price=10.00)        
+            active = 'new'
+            products = Product.objects.order_by('-pk')
         if 'dog_food' in request.GET:
-                products = Product.objects.filter(price=5.99)
+            active = 'dog_food'
+            products = Product.objects.filter(
+                Q(animal__name__icontains='dog') & Q(category__name__icontains='food'))
+        if 'dog_toys' in request.GET:
+            active = 'dog_toys'
+            products = Product.objects.filter(
+                Q(animal__name__icontains='dog') & Q(category__name__icontains='toys'))
+        if 'dog_other' in request.GET:
+            active = 'dog_other'
+            products = Product.objects.filter(Q(animal__name__icontains='dog')).exclude(
+                Q(category__name__icontains='food')).exclude(Q(category__name__icontains='toys'))
+        if 'cat_food' in request.GET:
+            active = 'cat_food'
+            products = Product.objects.filter(
+                Q(animal__name__icontains='cat') & Q(category__name__icontains='food'))
+        if 'cat_toys' in request.GET:
+            active = 'cat_toys'
+            products = Product.objects.filter(
+                Q(animal__name__icontains='cat') & Q(category__name__icontains='toys'))
+        if 'cat_other' in request.GET:
+            active = 'cat_other'
+            products = Product.objects.filter(Q(animal__name__icontains='cat')).exclude(
+                Q(category__name__icontains='food')).exclude(Q(category__name__icontains='toys'))
+        if 'giftcard' in request.GET:
+            active = 'giftcard'
+            products = Product.objects.filter(has_giftcard=True)
+        if 'other' in request.GET:
+            active = 'other'
+            products = Product.objects.all().exclude(
+                Q(category__name__icontains='food')).exclude(
+                    Q(category__name__icontains='toys')).exclude(
+                        Q(animal__name__icontains='cat')).exclude(
+                            Q(animal__name__icontains='dog'))
 
     context = {
         'products': products,
+        'active': active,
     }
 
     return render(request, 'products/base.html', context)
@@ -101,6 +141,7 @@ def edit_product(request, product_id):
     }
 
     return render(request, template, context)
+
 
 @login_required
 def delete_product(request, product_id):

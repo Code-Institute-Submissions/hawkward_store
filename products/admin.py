@@ -6,6 +6,7 @@ from .models import Product, Category, Animals
 
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
+        'pk',
         'sku',
         'name',
         'category',
@@ -17,12 +18,14 @@ class ProductAdmin(admin.ModelAdmin):
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = (
+        'pk',
         'friendly_name',
         'name',
     )
 
 class AnimalsAdmin(admin.ModelAdmin):
     list_display = (
+        'pk',
         'friendly_name',
         'name',
     )

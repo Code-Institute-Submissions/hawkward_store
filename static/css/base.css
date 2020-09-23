@@ -11,10 +11,8 @@ body {
 button, button:hover, button:focus {
   color: inherit;
   outline: none;
-  border: none;
   background-color: inherit;
   transition: all 0.3s;
-  width: 100%;
 }
 
 .buttonSidebarActive {
@@ -57,6 +55,11 @@ a, a:hover, a:focus {
   border-color: #2abb9b;
 }
 
+.btn-width, .btn-width:hover, .btn-width:focus, .btn-width:active {
+  border: none;
+  width: 100%;
+}
+
 .activeBtnNavbar, .btn-navbar:hover {
   color: #fff !important;
   background-color: #2abb9b;
@@ -94,11 +97,12 @@ a, a:hover, a:focus {
   margin-bottom: 1rem;
   padding: 0.3rem !important;
   display: inline !important;
-  width: 50%;
+  width: 30%;
 }
 
 .btn-sidebar:hover {
-  width: 50%;
+  border: 1px solid #2abb9b;
+  width: 30%;
 }
 
 #sidebar .sidebar-header {
@@ -122,7 +126,7 @@ a, a:hover, a:focus {
   background: #2abb9b;
 }
 
-#sidebar ul li.active>a, a[aria-expanded="true"], {
+#sidebar ul li.active>a, a[aria-expanded="true"] {
   color: #fff;
   background: #36d7b7;
 }
