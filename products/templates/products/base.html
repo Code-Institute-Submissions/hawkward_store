@@ -3,56 +3,60 @@
 {% block content %}
 <div class="container">
     <div class="row">
+        {% if products %}
         {% for product in products %}
-        <div class="col-12 col-md-6 mb-5">
-            <div class="card" style="min-height: 30rem;">
-                {% if product.image %}
-                <a href="{% url 'product_information' product.id %}">
-                    <img class="card-img-top" style="height: 25rem;" src="{{ product.image }}" alt="{{ product.name }}">
-                </a>
-                {% elif product.image_url %}
-                <a href="{% url 'product_information' product.id %}">
-                    <img class="card-img-top" style="height: 25rem;" src="{{ product.image_url }}"
-                        alt="{{ product.name }}">
-                </a>
-                {% else %}
-                <a href="{% url 'product_information' product.id %}">
-                    <img class="card-img-top" src="#" alt="{{ product.name }}">
-                </a>
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ product.name }}</h5>
-                    <p class="card-text text-truncate">{{ product.description }}</p>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">${{ product.price }}</li>
-                    <li class="list-group-item">{{ product.category.friendly_name }}</li>
-                </ul>
-                <div class="card-body">
-                    <div class="row m-2">
-                        <div class="col-6 text-left">
-                            <a href="{% url 'product_information' product.id %}"
-                                class="card-link btn btn-navbar">Product Info</a>
-                        </div>
-                        <div class="col-6 text-right">
-                            <a href="{% url 'add_item_to_bag' product.id %}" class="card-link btn btn-navbar">Add to
-                                cart</a>
-                        </div>
-                    </div>
-                    {% if request.user.is_superuser %}
-                    <div class="row m-2">
-                        <div class="col-6 text-left">
-                            <a href="{% url 'delete_product' product.id %}" class="card-link btn btn-danger">Delete</a>
-                        </div>
-                        <div class="col-6 text-right">
-                            <a href="{% url 'edit_product' product.id %}" class="card-link btn btn-navbar">Edit</a>
-                        </div>
-                    </div>
+        <div class="col-12 col-md-6 col-lg-4 mb-5">
+            <div class="card">
+                <div class="m-auto">
+                    {% if product.image_url %}
+                    <a href="{% url 'product_information' product.id %}">
+                        <img class="card-img-top" src="{{ product.image_url }}" alt="{{ product.name }}">
+                    </a>
+                    {% else %}
+                    <a href="{% url 'product_information' product.id %}">
+                        <img class="card-img-top" src="#" alt="{{ product.name }}">
+                    </a>
                     {% endif %}
+                </div>
+                <div class="mb-0">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text text-truncate">{{ product.description }}</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">${{ product.price }}</li>
+                        <li class="list-group-item">{{ product.category.friendly_name }}</li>
+                    </ul>
+                    <div class="card-body">
+                        <div class="row m-2">
+                            <div class="col-6 text-left">
+                                <a href="{% url 'product_information' product.id %}"
+                                    class="card-link btn btn-navbar">Product Info</a>
+                            </div>
+                            <div class="col-6 text-right">
+                                <a href="{% url 'add_item_to_bag' product.id %}" class="card-link btn btn-navbar">Add to
+                                    cart</a>
+                            </div>
+                        </div>
+                        {% if request.user.is_superuser %}
+                        <div class="row m-2">
+                            <div class="col-6 text-left">
+                                <a href="{% url 'delete_product' product.id %}"
+                                    class="card-link btn btn-danger">Delete</a>
+                            </div>
+                            <div class="col-6 text-right">
+                                <a href="{% url 'edit_product' product.id %}" class="card-link btn btn-navbar">Edit</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
         {% endfor %}
+        {% else %}
+        <h5>Currently no products to show</h5>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

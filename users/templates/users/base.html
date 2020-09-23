@@ -1,12 +1,26 @@
 {% extends "base.html" %}
 {% load static %}
+{% load mathfilters %}
 {% block content %}
 <div class="container">
-    <div class="row">
+    <div class="row m-5">
         <div class="col">
-            <p>TESTING</p>
             {% if user.is_authenticated %}
             Hello, {{ user.username }}
+            {% endif %}
+        </div>
+    </div>
+    <div class="row m-5">
+        <div class="col">
+            {% if giftcards %}
+            <h4>You have previously bought and started a giftcard for:</h4>
+            {% for giftcard in giftcards %}
+            <div class="col m-5">
+                <div>Product Name: {{ giftcard.product_name }}</div>
+                <div>How many currently bought: {{ giftcard.counter }}</div>
+                <div>How many left to buy before next free item: {{ 7|sub:giftcard.counter }}</div>
+            </div>
+            {% endfor %}
             {% endif %}
         </div>
     </div>

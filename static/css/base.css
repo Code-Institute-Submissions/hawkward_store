@@ -162,6 +162,17 @@ ul.CTAs a {
 }
 
 /* Content */
+.card {
+  width: auto;
+  height: 40rem;
+}
+
+.card .card-img-top {
+  margin: auto;
+  display: block;
+  width: 10rem;
+  height: auto;
+}
 
 #content {
   width: 100%;
