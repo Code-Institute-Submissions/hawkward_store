@@ -17,7 +17,8 @@
                 </a>
                 {% elif product.image_url %}
                 <a href="{% url 'product_information' product.id %}">
-                    <img class="card-img-top" style="height: 25rem;" src="{{ product.image_url }}" alt="{{ product.name }}">
+                    <img class="card-img-top" style="height: 25rem;" src="{{ product.image_url }}"
+                        alt="{{ product.name }}">
                 </a>
                 {% else %}
                 <a href="{% url 'product_information' product.id %}">
@@ -33,19 +34,26 @@
                     <li class="list-group-item">{{ product.category.friendly_name }}</li>
                 </ul>
                 <div class="card-body">
-                    <div class="row">
+                    <div class="row m-2">
                         <div class="col-6 text-left">
-                            <a href="{% url 'product_information' product.id %}" class="card-link btn btn-navbar">Product Info</a>
+                            <a href="{% url 'product_information' product.id %}"
+                                class="card-link btn btn-navbar">Product Info</a>
                         </div>
                         <div class="col-6 text-right">
-                            <a href="{% url 'add_item_to_bag' product.id %}" class="card-link btn btn-navbar">Add to cart</a>
+                            <a href="{% url 'add_item_to_bag' product.id %}" class="card-link btn btn-navbar">Add to
+                                cart</a>
                         </div>
-                        {% if request.user.is_superuser %}
-                        <div class="col text-center mt-2">
-                            <a href="{% url 'edit_product' product.id %}" class="card-link btn btn-danger">Edit</a>
-                        </div>
-                        {% endif %}
                     </div>
+                    {% if request.user.is_superuser %}
+                    <div class="row m-2">
+                        <div class="col-6 text-left">
+                            <a href="{% url 'delete_product' product.id %}" class="card-link btn btn-danger">Delete</a>
+                        </div>
+                        <div class="col-6 text-right">
+                            <a href="{% url 'edit_product' product.id %}" class="card-link btn btn-navbar">Edit</a>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

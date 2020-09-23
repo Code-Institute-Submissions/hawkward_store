@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect, reverse, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 
 from .models import Product, Category, Animals
 from .forms import ProductForm, CategoryForm, AnimalsForm
 
 # Create your views here.
+
 
 def products(request):
     """ Products page view """
@@ -14,12 +15,14 @@ def products(request):
     }
     return render(request, 'products/base.html', context)
 
+
 def product_information(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     context = {
         'product': product
     }
     return render(request, 'products/product_detail.html', context)
+
 
 @login_required
 def product_management(request):
@@ -31,6 +34,7 @@ def product_management(request):
     }
     return render(request, template, context)
 
+
 @login_required
 def add_product(request):
     if request.method == 'POST':
@@ -38,6 +42,7 @@ def add_product(request):
         if form.is_valid():
             form.save()
     return redirect('product_management')
+
 
 @login_required
 def add_category(request):
@@ -47,6 +52,7 @@ def add_category(request):
             form.save()
     return redirect('product_management')
 
+
 @login_required
 def add_animal(request):
     if request.method == 'POST':
@@ -54,7 +60,8 @@ def add_animal(request):
         if form.is_valid():
             form.save()
     return redirect('product_management')
-    
+
+
 @login_required
 def edit_product(request, product_id):
     """ Edit a product in the store """
@@ -77,3 +84,9 @@ def edit_product(request, product_id):
     }
 
     return render(request, template, context)
+
+@login_required
+def delete_product(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+    product.delete()
+    return redirect('products')
