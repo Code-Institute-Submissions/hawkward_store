@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-4">Product Management</h2>
+        </div>
+        <div class="col-8">
+            <h5>Add a product</h5>
+        </div>
+        <div class="col-12">
+            <hr>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col">
+            <form method="POST" action="{% url 'add_product' %}" class="form mb-2" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% for field in ProductForm %}
+                <div class="row mb-2">
+                    <div class="col">
+                        {{ field.name }}
+                    </div>
+                    <div class="col-8">
+                        {{ field }}
+                    </div>
+                </div>
+                {% endfor %}
+                {% if ProductForm.errors %}
+                <ul>
+                    {% for field in form %}
+                    {% for error in field.errors %}
+                    <li>{{ error|escape }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    <li>{{ error|escape }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <div class="col d-flex">
+                    <button class="btn btn-navbar ml-auto" type="submit">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-8">
+            <h5>Add a Animal</h5>
+        </div>
+        <div class="col-12">
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <form method="POST" action="{% url 'add_animal' %}" class="form mb-2">
+                {% csrf_token %}
+                {% for field in AnimalsForm %}
+                <div class="row mb-2">
+                    <div class="col">
+                        {{ field.name }}
+                    </div>
+                    <div class="col ml-auto">
+                        {{ field }}
+                    </div>
+                </div>
+                {% endfor %}
+                {% if AnimalsForm.errors %}
+                <ul>
+                    {% for field in form %}
+                    {% for error in field.errors %}
+                    <li>{{ error|escape }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    <li>{{ error|escape }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <div class="col d-flex">
+                    <button class="btn btn-navbar ml-auto" type="submit">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-8">
+            <h5>Add a Category</h5>
+        </div>
+        <div class="col-12">
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <form method="POST" action="{% url 'add_category' %}" class="form mb-2">
+                {% csrf_token %}
+                {% for field in CategoryForm %}
+                <div class="row mb-2">
+                    <div class="col">
+                        {{ field.name }}
+                    </div>
+                    <div class="col ml-auto">
+                        {{ field }}
+                    </div>
+                </div>
+                {% endfor %}
+                {% if CategoryForm.errors %}
+                <ul>
+                    {% for field in form %}
+                    {% for error in field.errors %}
+                    <li>{{ error|escape }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    <li>{{ error|escape }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <div class="col d-flex">
+                    <button class="btn btn-navbar ml-auto" type="submit">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

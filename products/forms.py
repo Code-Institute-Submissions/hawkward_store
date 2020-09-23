@@ -1,5 +1,5 @@
 from django import forms
-from .models import Product, Category
+from .models import Product, Category, Animals
 
 
 class ProductForm(forms.ModelForm):
@@ -8,18 +8,24 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = '__all__'
 
-    image = forms.ImageField(
-        label='Image', required=False)
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         categories = Category.objects.all()
-        friendly_names = [(c.id, c.get_friendly_name()) for c in categories]
+        animal = Animals.objects.all()
+        friendly_names_category = [(c.id, c.get_friendly_name()) for c in categories]
+        friendly_names_animals = [(a.id, a.get_friendly_name()) for a in animal]
 
-        self.fields['category'].choices = friendly_names
+        self.fields['category'].choices = friendly_names_category
+        self.fields['animal'].choices = friendly_names_animals
 
 class CategoryForm(forms.ModelForm):
 
     class Meta:
         model = Category
+        fields = '__all__'
+
+class AnimalsForm(forms.ModelForm):
+
+    class Meta:
+        model = Animals
         fields = '__all__'

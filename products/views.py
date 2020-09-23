@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib.auth.decorators import login_required
 
-from .models import Product, Category
-from .forms import ProductForm, CategoryForm
+from .models import Product, Category, Animals
+from .forms import ProductForm, CategoryForm, AnimalsForm
 
 # Create your views here.
 
@@ -22,38 +22,38 @@ def product_information(request, product_id):
     return render(request, 'products/product_detail.html', context)
 
 @login_required
+def product_management(request):
+    template = 'products/product_management.html'
+    context = {
+        'ProductForm': ProductForm,
+        'CategoryForm': CategoryForm,
+        'AnimalsForm': AnimalsForm,
+    }
+    return render(request, template, context)
+
+@login_required
 def add_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            product = form.save()
-            return redirect(reverse('add_category'))
-        else:
-            return redirect(reverse('add_product'))
-    else:
-        productForm = ProductForm()
-    template = 'products/add_product.html'
-    context = {
-        'productForm': productForm,
-    }
-    return render(request, template, context)
+            form.save()
+    return redirect('product_management')
 
 @login_required
 def add_category(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST, request.FILES)
         if form.is_valid():
-            category = form.save()
-            return redirect(reverse('add_product'))
-        else:
-            return redirect(reverse('add_category'))
-    else:
-        categoryForm = CategoryForm()
-    template = 'products/add_category.html'
-    context = {
-        'categoryForm': categoryForm,
-    }
-    return render(request, template, context)
+            form.save()
+    return redirect('product_management')
+
+@login_required
+def add_animal(request):
+    if request.method == 'POST':
+        form = AnimalsForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+    return redirect('product_management')
     
 @login_required
 def edit_product(request, product_id):
