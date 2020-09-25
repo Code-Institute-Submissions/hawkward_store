@@ -1,31 +1,84 @@
 {% extends "base.html" %}
 {% load static %}
+{% load mathfilters %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'payment/css/payment.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="row">
         <div class="col">
-            <form action="{% url 'payment_processing' %}" method="POST">
+            <form action="{% url 'payment_processing' %" method="POST" id="payment-form">
                 {% csrf_token %}
-                {% for field in OrderForm %}
-                <span>{{ field.name }}</span>
-                <span>{{ field }}</span>
-                {% endfor %}
-                <button class="btn btn-navbar" type="submit">Next</button>
-            </form>
+                <fieldset class="rounded px-3 mb-5">
+                    <legend class="fieldset-label small text-black px-2 w-auto">Details</legend>
+                    {% for field in order_form %}
+                    <p>{{ field.name }}</p>
+                    <p>{{ field }}</p>
+                    {% endfor %}
+                    {% if form.errors %}
+                    <ul class="mb-2">
+                      {% for field in form %}
+                      {% for error in field.errors %}
+                      <li>{{ error|escape }}</li>
+                      {% endfor %}
+                      {% endfor %}
+                      {% for error in form.non_field_errors %}
+                      <li>{{ error|escape }}</li>
+                      {% endfor %}
+                    </ul>
+                    {% endif %}
+                </fieldset>
+                <div class="form-row">
+                  <label for="card-element">
+                    Credit or debit card
+                  </label>
+                  <div id="card-element">
+                    <!-- A Stripe Element will be inserted here. -->
+                  </div>
+              
+                  <!-- Used to display form errors. -->
+                  <div id="card-errors" role="alert"></div>
+                </div>
+              
+                <button>Submit Payment</button>
+              </form>
         </div>
     </div>
     <div class="row">
         {% for item in products %}
         <div class="col-4 mt-5">
-            <p>{{ item.product.name }}</p>
-            <p>{{ item.product.price }}</p>
-            <p>{{ item.quantity }}</p>
-            <p>{{ item.product_id }}</p>
-            <p>Total Cost: {{ total_price }}</p>
-            <p>Total Items: {{ total_products }}</p>
+            <p>Product Name: <br>{{ item.product.name }}</p>
+            <p>Amount: {{ item.quantity }}</p>
+            <p>Price per Product: {{ item.product.price }}$</p>
+            <p>Total Price: {{ item.quantity|mul:item.product.price }}$</p>
+            <p>Product ID: {{ item.product_id }}</p>
         </div>
         {% endfor %}
     </div>
+    <div class="row">
+        <div class="col">
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p>Total Cost before discount: {{ total_price }}</p>
+            <p>Total Cost after discount: {{ total }}</p>
+            <p>Total Items: {{ total_products }}</p>
+        </div>
+        <div class="col">
+            <p>Total Saved: {{ total_saved }}</p>
+            <p>Total Saved Items: {{ product_saved }}</p>
+        </div>
+    </div>
 </div>
+{% endblock %}
+{% block postloadjs %}
+{{ block.super }}
+{{ stripe_public_key|json_script:"id_stripe_public_key" }}
+{{ client_secret|json_script:"id_client_secret" }}
+<script src="{% static 'payment/js/payment.js' %}"></script>
 {% endblock %}

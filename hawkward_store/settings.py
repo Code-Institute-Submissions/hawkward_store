@@ -92,7 +92,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'shopping_bag.contexts.shopping_bag',
+                'shopping_bag.contexts.shopping_bag_items',
             ],
         },
     },

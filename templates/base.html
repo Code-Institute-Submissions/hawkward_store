@@ -46,7 +46,8 @@
                     <span>Newsletter Sign Up!</span>
                     <form action="#">
                         <input type="email" name="newsletterEmail" id="newsletterEmail" placeholder="Email">
-                        <span><button type="submit" class="btn-sidebar"><i class="fab fa-mailchimp fa-2x"></i></button></span>
+                        <span><button type="submit" class="btn-sidebar"><i
+                                    class="fab fa-mailchimp fa-2x"></i></button></span>
                     </form>
                 </li>
                 <li class="text-center">
@@ -61,64 +62,81 @@
                 </li>
                 <li>
                     <form method="GET" action="{% url 'products' %}">
-                        <button type="submit" name="all" class="sidebarNavLink btn-width{% if active == 'all'%} buttonSidebarActive {% endif %}">All Products</button>
+                        <button type="submit" name="all"
+                            class="sidebarNavLink btn-width{% if active == 'all'%} buttonSidebarActive {% endif %}">All
+                            Products</button>
                     </form>
                 </li>
                 <li>
                     <form method="GET" action="{% url 'products' %}">
-                        <button type="submit" name="new" class="sidebarNavLink btn-width{% if active == 'new'%} buttonSidebarActive {% endif %}">New Additions</button>
+                        <button type="submit" name="new"
+                            class="sidebarNavLink btn-width{% if active == 'new'%} buttonSidebarActive {% endif %}">New
+                            Additions</button>
                     </form>
                 </li>
                 <li>
-                    <a href="#dogsSubmenu" data-toggle="collapse" aria-expanded="{% if active == 'dog_food' or active == 'dog_toys' or active == 'dog_other'%}true{% else %}false{% endif %}"
+                    <a href="#dogsSubmenu" data-toggle="collapse"
+                        aria-expanded="{% if active == 'dog_food' or active == 'dog_toys' or active == 'dog_other'%}true{% else %}false{% endif %}"
                         class="dropdown-toggle sidebarNavLink text-center{% if active == 'dog_food' or active == 'dog_toys' or active == 'dog_other'%} buttonSidebarActive {% endif %}">Dogs</a>
-                    <ul class="collapse list-unstyled {% if active == 'dog_food' or active == 'dog_toys' or active == 'dog_other'%}show{% endif %}" id="dogsSubmenu">
+                    <ul class="collapse list-unstyled {% if active == 'dog_food' or active == 'dog_toys' or active == 'dog_other'%}show{% endif %}"
+                        id="dogsSubmenu">
                         <li>
                             <form method="GET" action="{% url 'products' %}">
-                                <button type="submit" name="dog_food" class="text-left size-text btn-width{% if active == 'dog_food'%} buttonSidebarActive {% endif %}">Food</button>
+                                <button type="submit" name="dog_food"
+                                    class="text-left size-text btn-width{% if active == 'dog_food'%} buttonSidebarActive {% endif %}">Food</button>
                             </form>
                         </li>
                         <li>
                             <form method="GET" action="{% url 'products' %}">
-                                <button type="submit" name="dog_toys" class="text-left btn-width{% if active == 'dog_toys'%} buttonSidebarActive {% endif %}">Toys</button>
+                                <button type="submit" name="dog_toys"
+                                    class="text-left btn-width{% if active == 'dog_toys'%} buttonSidebarActive {% endif %}">Toys</button>
                             </form>
                         </li>
                         <li>
                             <form method="GET" action="{% url 'products' %}">
-                                <button type="submit" name="dog_other" class="text-left btn-width{% if active == 'dog_other'%} buttonSidebarActive {% endif %}">Other</button>
+                                <button type="submit" name="dog_other"
+                                    class="text-left btn-width{% if active == 'dog_other'%} buttonSidebarActive {% endif %}">Other</button>
                             </form>
                         </li>
                     </ul>
                 </li>
                 <li>
-                    <a href="#catsSubmenu" data-toggle="collapse" aria-expanded="{% if active == 'cat_food' or active == 'cat_toys' or active == 'cat_other'%}true{%else%}false{% endif %}"
+                    <a href="#catsSubmenu" data-toggle="collapse"
+                        aria-expanded="{% if active == 'cat_food' or active == 'cat_toys' or active == 'cat_other'%}true{%else%}false{% endif %}"
                         class="dropdown-toggle sidebarNavLink text-center {% if active == 'cat_food' or active == 'cat_toys' or active == 'cat_other'%}buttonSidebarActive{% endif %}">Cats</a>
-                    <ul class="collapse list-unstyled {% if active == 'cat_food' or active == 'cat_toys' or active == 'cat_other'%}show{% endif %}" id="catsSubmenu">
+                    <ul class="collapse list-unstyled {% if active == 'cat_food' or active == 'cat_toys' or active == 'cat_other'%}show{% endif %}"
+                        id="catsSubmenu">
                         <li>
                             <form method="GET" action="{% url 'products' %}">
-                                <button type="submit" name="cat_food" class="text-left btn-width{% if active == 'cat_food'%} buttonSidebarActive {% endif %}">Food</button>
+                                <button type="submit" name="cat_food"
+                                    class="text-left btn-width{% if active == 'cat_food'%} buttonSidebarActive {% endif %}">Food</button>
                             </form>
                         </li>
                         <li>
                             <form method="GET" action="{% url 'products' %}">
-                                <button type="submit" name="cat_toys" class="text-left btn-width{% if active == 'cat_toys'%} buttonSidebarActive {% endif %}">Toys</button>
+                                <button type="submit" name="cat_toys"
+                                    class="text-left btn-width{% if active == 'cat_toys'%} buttonSidebarActive {% endif %}">Toys</button>
                             </form>
                         </li>
                         <li>
                             <form method="GET" action="{% url 'products' %}">
-                                <button type="submit" name="cat_other" class="text-left btn-width{% if active == 'cat_other'%} buttonSidebarActive {% endif %}">Other</button>
+                                <button type="submit" name="cat_other"
+                                    class="text-left btn-width{% if active == 'cat_other'%} buttonSidebarActive {% endif %}">Other</button>
                             </form>
                         </li>
                     </ul>
                 </li>
                 <li>
                     <form method="GET" action="{% url 'products' %}">
-                        <button type="submit" name="giftcard" class="sidebarNavLink btn-width{% if active == 'giftcard'%} buttonSidebarActive {% endif %}">Giftcard Products</button>
+                        <button type="submit" name="giftcard"
+                            class="sidebarNavLink btn-width{% if active == 'giftcard'%} buttonSidebarActive {% endif %}">Giftcard
+                            Products</button>
                     </form>
                 </li>
                 <li>
                     <form method="GET" action="{% url 'products' %}">
-                        <button type="submit" name="other" class="sidebarNavLink btn-width{% if active == 'other'%} buttonSidebarActive {% endif %}">Other</button>
+                        <button type="submit" name="other"
+                            class="sidebarNavLink btn-width{% if active == 'other'%} buttonSidebarActive {% endif %}">Other</button>
                     </form>
                 </li>
             </ul>
@@ -150,38 +168,40 @@
 
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul id="navUl" class="navbar-nav ml-auto">
+                            {% if request.user.is_superuser %}
+                            <li class="nav-item mx-2 my-2">
+                                <a class="nav-link btn btn-navbar" href="../../../admin/">Admin Panel</a>
+                            </li>
+                            {% endif %}
                             <li class="nav-item mx-2 my-2">
                                 <a href="#profile" class="nav-link btn btn-navbar" data-toggle="collapse"
-                                    aria-expanded="false" class="dropdown-toggle" style="min-width: 15rem;">Profile</a>
-                                <ul class="collapse list-unstyled" id="profile">
-                                    {% if request.user.is_authenticated %}
-                                    {% if request.user.is_superuser %}
-                                    <li>
-                                        <a href="{% url 'add_product' %}"
-                                            class="dropdown-item btn btn-navbar my-2">Product Management</a>
-                                    </li>
-                                    {% endif %}
-                                    <li>
-                                        <a href="{% url 'users' %}" class="dropdown-item btn btn-navbar my-2">My
-                                            Profile</a>
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'account_logout' %}"
-                                            class="dropdown-item btn btn-navbar">Logout</a>
-                                    </li>
-                                    {% else %}
-                                    <li>
-                                        <a href="{% url 'account_signup' %}"
-                                            class="dropdown-item btn btn-navbar my-2">Register</a>
-                                    </li>
-                                    <li>
-                                        <a href="{% url 'account_login' %}"
-                                            class="dropdown-item btn btn-navbar">Login</a>
-                                    </li>
-                                    {% endif %}
-                                </ul>
-
+                                    aria-expanded="false" class="dropdown-toggle">Profile</a>
                             </li>
+                            <ul class="collapse list-unstyled" id="profile">
+                                {% if request.user.is_authenticated %}
+                                {% if request.user.is_superuser %}
+                                <li>
+                                    <a href="{% url 'add_product' %}" class="dropdown-item btn btn-navbar my-2">Product
+                                        Management</a>
+                                </li>
+                                {% endif %}
+                                <li>
+                                    <a href="{% url 'users' %}" class="dropdown-item btn btn-navbar my-2">My
+                                        Profile</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'account_logout' %}" class="dropdown-item btn btn-navbar">Logout</a>
+                                </li>
+                                {% else %}
+                                <li>
+                                    <a href="{% url 'account_signup' %}"
+                                        class="dropdown-item btn btn-navbar my-2">Register</a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'account_login' %}" class="dropdown-item btn btn-navbar">Login</a>
+                                </li>
+                                {% endif %}
+                            </ul>
                             <li class="nav-item mx-2 my-2">
                                 <a class="nav-link btn btn-navbar" href="{% url 'shopping_bag' %}">Shopping Cart</a>
                             </li>

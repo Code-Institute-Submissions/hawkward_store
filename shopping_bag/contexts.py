@@ -2,7 +2,7 @@ from django.conf import settings
 from products.models import Product
 from django.shortcuts import get_object_or_404
 
-def shopping_bag(request):
+def shopping_bag_items(request):
 
     products = []
     total_price = 0
