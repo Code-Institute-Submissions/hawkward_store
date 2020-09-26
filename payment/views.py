@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -129,10 +130,11 @@ def payment_processing(request):
                         giftcard_q_delete = Giftcards.objects.filter(
                             Q(product_id=product_id) & Q(user=request.user))[0]
                         old_counter = int(giftcard_q.counter + quantity)
-                        while old_counter >=7:                        
+                        while old_counter >= 7:
                             old_counter = int(giftcard_q.counter - 7)
                         giftcard_q_delete.counter = old_counter
                         giftcard_q_delete.save()
+                    del request.session['free_items']
 
             return redirect(reverse('products'))
 
@@ -177,3 +179,28 @@ def payment_processing(request):
 
 def payment_success(request):
     return render(request, 'payment/payment_success.html')
+
+
+@login_required
+def subscription(request):
+    # Reads application/json and returns a response
+    stripe_public_key = settings.STRIPE_PUBLIC_KEY
+    stripe_secret_key = settings.STRIPE_SECRET_KEY
+    stripe.api_key = stripe_secret_key
+    if request.method == 'POST':
+        try:
+            # Create a new customer object
+            customer = stripe.Customer.create(
+                first_name=request.POST['first_name'],
+                last_name=request.POST['last_name'],
+                email=request.POST['email'],
+                source=request.POST['stripeToken']
+            )
+            # At this point, associate the ID of the Customer object with your
+            # own internal representation of a customer, if you have one.
+        except Exception as e:
+            return redirect('products')
+    context = {        
+        'stripe_public_key': stripe_public_key,
+    }
+    return render(request, 'payment/subscription.html', context)

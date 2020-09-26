@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'payment/css/payment.css' %}">
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <p>Subscription</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <form action="{% url 'subscription' %}" method="POST" id="subscription-form">
+                {% csrf_token %}
+                <div>
+                    <input id="first_name" type="text" name="first_name" placeholder="First Name" required />
+                </div>
+                <div>
+                    <input id="last_name" type="text" name="last_name" placeholder="Last Name" required />
+                </div>
+                <div>
+                    <input id="email" type="email" name="email" placeholder="Email Address" required />
+                </div>
+                <div class="form-row">
+                    <label for="card-element">
+                        Credit or debit card
+                    </label>
+                    <div id="card-element">
+                        <!-- A Stripe Element will be inserted here. -->
+                    </div>
+
+                    <!-- Used to display form errors. -->
+                    <div id="card-errors" role="alert"></div>
+                </div>
+
+                <button>Submit Payment</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block postloadjs %}
+{{ block.super }}
+{{ stripe_public_key|json_script:"id_stripe_public_key" }}
+<script src="{% static 'payment/js/payment.js' %}"></script>
+{% endblock %}
