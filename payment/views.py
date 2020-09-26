@@ -119,6 +119,21 @@ def payment_processing(request):
             del request.session['total']
             return redirect('payment_success')
         else:
+            ''' reset giftcard to old state '''
+            for product_id, quantity in shopping_bag.items():
+                product = get_object_or_404(Product, pk=product_id)
+                if product.has_giftcard == True:
+                    giftcard_q_delete = Giftcards.objects.filter(
+                        Q(product_id=product_id) & Q(user=request.user))
+                    if giftcard_q_delete:
+                        giftcard_q_delete = Giftcards.objects.filter(
+                            Q(product_id=product_id) & Q(user=request.user))[0]
+                        old_counter = int(giftcard_q.counter + quantity)
+                        while old_counter >=7:                        
+                            old_counter = int(giftcard_q.counter - 7)
+                        giftcard_q_delete.counter = old_counter
+                        giftcard_q_delete.save()
+
             return redirect(reverse('products'))
 
     shopping_bag = request.session.get('shopping_bag', {})
