@@ -9,9 +9,15 @@ class Giftcards(models.Model):
     counter = models.IntegerField(null=False, blank=False, default=0)
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)    
-    full_name = models.CharField(max_length=50, blank=False, null=False)
-    email = models.EmailField(max_length=254, blank=False, null=False)
+    user =  models.ForeignKey(User, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=50, null=False, blank=False)
+    last_name = models.CharField(max_length=50, null=False, blank=False)
+    email = models.EmailField(max_length=254, null=False, blank=False)
+    country = models.CharField(max_length=50, null=False, blank=False)
+    street_address = models.CharField(max_length=50, null=False, blank=False)
+    city = models.CharField(max_length=50, null=False, blank=False)
+    postcode = models.CharField(max_length=50, null=False, blank=False)
+    phone_number = models.CharField(max_length=50, null=False, blank=False)
 
     def __str__(self):
         return self.user

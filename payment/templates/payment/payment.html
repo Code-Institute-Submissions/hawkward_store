@@ -10,7 +10,7 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <form action="{% url 'payment_processing' %" method="POST" id="payment-form">
+            <form action="{% url 'payment_processing' %}" method="POST" id="payment-form">
                 {% csrf_token %}
                 <fieldset class="rounded px-3 mb-5">
                     <legend class="fieldset-label small text-black px-2 w-auto">Details</legend>
@@ -41,6 +41,7 @@
               
                   <!-- Used to display form errors. -->
                   <div id="card-errors" role="alert"></div>
+                  <input type="hidden" value="{{ client_secret }}" name="client_secret">
                 </div>
               
                 <button>Submit Payment</button>
