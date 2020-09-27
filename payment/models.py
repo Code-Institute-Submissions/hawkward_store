@@ -1,7 +1,7 @@
 import uuid
 
 from django.db import models
-from products.models import Product
+from products.models import ProductsStore
 from django.contrib.auth.models import User
 
 
@@ -46,7 +46,7 @@ class OrderItems(models.Model):
     order = models.ForeignKey(Order, null=False, blank=False,
                               on_delete=models.CASCADE)
     product = models.ForeignKey(
-        Product, null=False, blank=False, on_delete=models.CASCADE)
+        ProductsStore, null=False, blank=False, on_delete=models.CASCADE)
     product_size = models.CharField(
         max_length=2, null=True, blank=True)  # XS, S, M, L, XL
     quantity = models.IntegerField(null=False, blank=False, default=0)

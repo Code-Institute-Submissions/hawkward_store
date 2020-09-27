@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'payment/css/subscription.css' %}">
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'payment/js/subscription.js' %}"></script>
+<script>
+    card('{{stripe_public_key}}', '{{customer_email}}');
+</script>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <form action="{% url 'subscription_backend' %}" method="POST" id="subscription-form">
+                {% csrf_token %}
+                <label for="card-element">
+                    Credit or debit card
+                </label>
+                <div id="card-element">
+                    <!-- A Stripe Element will be inserted here. -->
+                </div>
+
+                <!-- Used to display form errors. -->
+                <div id="card-errors" role="alert"></div>
+                <input type="hidden" value="{{ payment_intent_id }}" name="payment_intent_id">
+                <input type="hidden" value="{{ renewal }}" name="renewal">
+                <input type="hidden" value="{{ stripe_plan_id }}" name="stripe_plan_id">
+                <button id="submit-button">Subscribe</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block postloadjs %}
+{{ block.super }}
+<script>card('{{stripe_public_key}}', '{{customer_email}}');</script>
+{% endblock %}

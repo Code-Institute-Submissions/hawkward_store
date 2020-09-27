@@ -1,5 +1,5 @@
 from django.conf import settings
-from products.models import Product
+from products.models import ProductsStore
 from django.shortcuts import get_object_or_404
 
 def shopping_bag_items(request):
@@ -10,7 +10,7 @@ def shopping_bag_items(request):
     shopping_bag = request.session.get('shopping_bag', {})
 
     for product_id, quantity in shopping_bag.items():
-        product = get_object_or_404(Product, pk=product_id)
+        product = get_object_or_404(ProductsStore, pk=product_id)
         total_price += quantity * product.price
         total_products += quantity
         products.append({

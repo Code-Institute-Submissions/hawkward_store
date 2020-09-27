@@ -186,3 +186,7 @@ STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY',
                         default=os.getenv('STRIPE_SECRET_KEY', ''))
 STRIPE_WH_SECRET = env(
     'STRIPE_WH_SECRET', default=os.getenv('STRIPE_WH_SECRET', ''))
+STRIPE_PLAN_MONTHLY_ID = env(
+    'STRIPE_PLAN_MONTHLY_ID', default=os.getenv('STRIPE_PLAN_MONTHLY_ID', ''))
+STRIPE_PLAN_YEARLY_ID = env(
+    'STRIPE_PLAN_YEARLY_ID', default=os.getenv('STRIPE_PLAN_YEARLY_ID', ''))

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from products.models import Product
+from products.models import ProductsStore
 
 # Create your views here.
 
@@ -7,7 +7,7 @@ def shopping_bag(request):
     return render(request, 'shopping_bag/base.html')
 
 def add_item_to_bag(request, product_id):
-    product = get_object_or_404(Product, pk=product_id)
+    product = get_object_or_404(ProductsStore, pk=product_id)
     quantity = 1
     shopping_bag = request.session.get('shopping_bag', {})
 

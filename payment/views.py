@@ -5,9 +5,10 @@ from django.conf import settings
 from django.contrib.auth.models import User
 
 from users.models import Giftcards, UserProfile
-from products.models import Product
+from products.models import ProductsStore
 from .models import Order, OrderItems
 from django.db.models import Q
+from django.db import transaction
 from shopping_bag.contexts import shopping_bag_items
 
 from users.forms import GiftcardsForm, UserProfileForm
@@ -24,7 +25,7 @@ def check_for_free_items(request):
     shopping_bag = request.session['shopping_bag']
     counter = 0
     for product_id, quantity in shopping_bag.items():
-        product = get_object_or_404(Product, pk=product_id)
+        product = get_object_or_404(ProductsStore, pk=product_id)
         if product.has_giftcard == True:
             giftcard_q = Giftcards.objects.filter(
                 Q(product_id=product_id) & Q(user=request.user))
@@ -90,7 +91,7 @@ def payment_processing(request):
                 order.user_profile = user
             order.save()
             for product_id, quantity in shopping_bag.items():
-                product = Product.objects.get(pk=product_id)
+                product = ProductsStore.objects.get(pk=product_id)
                 order_item = OrderItems(
                     order=order,
                     product=product,
@@ -122,7 +123,7 @@ def payment_processing(request):
         else:
             ''' reset giftcard to old state '''
             for product_id, quantity in shopping_bag.items():
-                product = get_object_or_404(Product, pk=product_id)
+                product = get_object_or_404(ProductsStore, pk=product_id)
                 if product.has_giftcard == True:
                     giftcard_q_delete = Giftcards.objects.filter(
                         Q(product_id=product_id) & Q(user=request.user))
@@ -148,7 +149,7 @@ def payment_processing(request):
     product_saved = []
     if free_items:
         for product_id, quantity in free_items.items():
-            product = get_object_or_404(Product, pk=product_id)
+            product = get_object_or_404(ProductsStore, pk=product_id)
             total_saved += int(product.price * quantity)
             product_saved.append({
                 f'{product_id}': quantity,
@@ -183,24 +184,92 @@ def payment_success(request):
 
 @login_required
 def subscription(request):
-    # Reads application/json and returns a response
     stripe_public_key = settings.STRIPE_PUBLIC_KEY
-    stripe_secret_key = settings.STRIPE_SECRET_KEY
-    stripe.api_key = stripe_secret_key
-    if request.method == 'POST':
-        try:
-            # Create a new customer object
-            customer = stripe.Customer.create(
-                first_name=request.POST['first_name'],
-                last_name=request.POST['last_name'],
-                email=request.POST['email'],
-                source=request.POST['stripeToken']
-            )
-            # At this point, associate the ID of the Customer object with your
-            # own internal representation of a customer, if you have one.
-        except Exception as e:
-            return redirect('products')
-    context = {        
+    context = {
         'stripe_public_key': stripe_public_key,
     }
     return render(request, 'payment/subscription.html', context)
+
+
+@require_POST
+@login_required
+def subscription_payment_method(request):
+    stripe_secret_key = settings.STRIPE_SECRET_KEY
+    stripe_public_key = settings.STRIPE_PUBLIC_KEY
+    plan1 = settings.STRIPE_PLAN_MONTHLY_ID
+    plan2 = settings.STRIPE_PLAN_YEARLY_ID
+    stripe.api_key = stripe_secret_key
+    currency = settings.STRIPE_CURRENCY
+    renewal = request.POST.get('renewal', True)
+    payment_method = 'card'
+    customer_email = request.user.email
+    amount = 0
+    plan = ''
+
+    if request.POST['subscription_plan'] == 'plan1':
+        plan = plan1
+        amount = 1000
+    elif request.POST['subscription_plan'] == 'plan2':
+        plan = plan2
+        amount = 10000
+    stripe_plan_id = plan
+
+    payment_intent = stripe.PaymentIntent.create(
+        amount=amount,
+        currency=currency,
+        payment_method_types=['card'],
+    )
+    secret_key = payment_intent.client_secret
+    payment_intent_id = payment_intent.id
+    context = {
+        'secret_key': secret_key,
+        'stripe_public_key': stripe_public_key,
+        'customer_email': customer_email,
+        'payment_intent_id': payment_intent_id,
+        'renewal': renewal,
+        'stripe_plan_id': stripe_plan_id,
+        }
+
+    return render(request, 'payment/subscription_intent.html', context)
+
+
+@require_POST
+@login_required
+def subscription_backend(request):
+    stripe_secret_key = settings.STRIPE_SECRET_KEY
+    stripe.api_key = stripe_secret_key
+    payment_intent_id = request.POST['payment_intent_id']
+    payment_method_id = request.POST['payment_method_id']
+    stripe_plan_id = request.POST['stripe_plan_id']
+    renewal = request.POST['renewal']
+
+    if renewal == True:
+        customer = stripe.Customer.create(
+            email=request.user.email,
+            payment_method_id=payment_method_id,
+            invoice_settings={
+                'default_payment_method': payment_method_id
+            }
+        )
+        stripe.Subscription.create(
+            customer=customer.id,
+            items=[
+                {
+                    'plan': stripe_plan_id
+                },
+            ]
+        )
+        stripe.PaymentIntent.modify(
+            payment_intent_id,
+            payment_method=payment_method_id,
+            customer=customer.id
+        )
+    else:
+        stripe.PaymentIntent.modify(
+            payment_intent_id,
+            payment_method=payment_method_id
+        )
+    stripe.PaymentIntent.confirm(
+        payment_intent_id
+    )
+    return render(request, 'payment/subscription_success.html')

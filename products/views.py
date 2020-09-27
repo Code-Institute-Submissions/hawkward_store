@@ -2,15 +2,15 @@ from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib.auth.decorators import login_required
 
 from django.db.models import Q
-from .models import Product, Category, Animals
-from .forms import ProductForm, CategoryForm, AnimalsForm
+from .models import ProductsStore, Category, Animals
+from .forms import ProductsStoreForm, CategoryForm, AnimalsForm
 
 # Create your views here.
 
 
 def products(request):
     """ Products page view """
-    products = Product.objects.all().order_by('name')
+    products = ProductsStore.objects.all().order_by('name')
     active = None
     query = None
     if request.GET:
@@ -26,40 +26,40 @@ def products(request):
             products = products.filter(queries)
         if 'all' in request.GET:
             active = 'all'
-            products = Product.objects.all().order_by('name')
+            products = ProductsStore.objects.all().order_by('name')
         if 'new' in request.GET:
             active = 'new'
-            products = Product.objects.order_by('-pk')
+            products = ProductsStore.objects.order_by('-pk')
         if 'dog_food' in request.GET:
             active = 'dog_food'
-            products = Product.objects.filter(
+            products = ProductsStore.objects.filter(
                 Q(animal__name__icontains='dog') & Q(category__name__icontains='food'))
         if 'dog_toys' in request.GET:
             active = 'dog_toys'
-            products = Product.objects.filter(
+            products = ProductsStore.objects.filter(
                 Q(animal__name__icontains='dog') & Q(category__name__icontains='toys'))
         if 'dog_other' in request.GET:
             active = 'dog_other'
-            products = Product.objects.filter(Q(animal__name__icontains='dog')).exclude(
+            products = ProductsStore.objects.filter(Q(animal__name__icontains='dog')).exclude(
                 Q(category__name__icontains='food')).exclude(Q(category__name__icontains='toys'))
         if 'cat_food' in request.GET:
             active = 'cat_food'
-            products = Product.objects.filter(
+            products = ProductsStore.objects.filter(
                 Q(animal__name__icontains='cat') & Q(category__name__icontains='food'))
         if 'cat_toys' in request.GET:
             active = 'cat_toys'
-            products = Product.objects.filter(
+            products = ProductsStore.objects.filter(
                 Q(animal__name__icontains='cat') & Q(category__name__icontains='toys'))
         if 'cat_other' in request.GET:
             active = 'cat_other'
-            products = Product.objects.filter(Q(animal__name__icontains='cat')).exclude(
+            products = ProductsStore.objects.filter(Q(animal__name__icontains='cat')).exclude(
                 Q(category__name__icontains='food')).exclude(Q(category__name__icontains='toys'))
         if 'giftcard' in request.GET:
             active = 'giftcard'
-            products = Product.objects.filter(has_giftcard=True)
+            products = ProductsStore.objects.filter(has_giftcard=True)
         if 'other' in request.GET:
             active = 'other'
-            products = Product.objects.all().exclude(
+            products = ProductsStore.objects.all().exclude(
                 Q(category__name__icontains='food')).exclude(
                     Q(category__name__icontains='toys')).exclude(
                         Q(animal__name__icontains='cat')).exclude(
@@ -74,7 +74,7 @@ def products(request):
 
 
 def product_information(request, product_id):
-    product = get_object_or_404(Product, pk=product_id)
+    product = get_object_or_404(ProductsStore, pk=product_id)
     context = {
         'product': product
     }
@@ -85,7 +85,7 @@ def product_information(request, product_id):
 def product_management(request):
     template = 'products/product_management.html'
     context = {
-        'ProductForm': ProductForm,
+        'ProductForm': ProductsStoreForm,
         'CategoryForm': CategoryForm,
         'AnimalsForm': AnimalsForm,
     }
@@ -95,7 +95,7 @@ def product_management(request):
 @login_required
 def add_product(request):
     if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)
+        form = ProductsStoreForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
     return redirect('product_management')
@@ -123,16 +123,16 @@ def add_animal(request):
 def edit_product(request, product_id):
     """ Edit a product in the store """
 
-    product = get_object_or_404(Product, pk=product_id)
+    product = get_object_or_404(ProductsStore, pk=product_id)
     if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES, instance=product)
+        form = ProductsStoreForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
             return redirect('products')
         else:
             return redirect('add_product')
     else:
-        form = ProductForm(instance=product)
+        form = ProductsStoreForm(instance=product)
 
     template = 'products/edit_product.html'
     context = {
@@ -145,6 +145,6 @@ def edit_product(request, product_id):
 
 @login_required
 def delete_product(request, product_id):
-    product = get_object_or_404(Product, pk=product_id)
+    product = get_object_or_404(ProductsStore, pk=product_id)
     product.delete()
     return redirect('products')

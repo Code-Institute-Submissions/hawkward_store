@@ -29,7 +29,7 @@ class Animals(models.Model):
     def get_friendly_name(self):
         return self.friendly_name
 
-class Product(models.Model):
+class ProductsStore(models.Model):
     category = models.ForeignKey(
         'Category', null=True, blank=True, on_delete=models.SET_NULL)
     sku = models.CharField(max_length=254, null=True, blank=True)
