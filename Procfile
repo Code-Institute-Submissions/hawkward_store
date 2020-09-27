@@ -1,0 +1,1 @@
+web: gunicorn hawkward_store.wsgi:application
