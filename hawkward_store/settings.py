@@ -32,7 +32,7 @@ SECRET_KEY = env('SECRET_KEY', default=os.environ.get('SECRET_KEY', ''))
 DEBUG = 'DEVELOPMENT' in os.environ
 
 ALLOWED_HOSTS = [
-    'https://hawkward-store.herokuapp.com/',
+    'https://hawkward-store.herokuapp.com',
     'localhost',
     '127.0.0.1',
 ]
@@ -177,7 +177,6 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
