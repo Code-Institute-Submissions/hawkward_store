@@ -32,7 +32,7 @@ SECRET_KEY = env('SECRET_KEY', default=os.environ.get('SECRET_KEY', ''))
 DEBUG = 'DEVELOPMENT' in os.environ
 
 ALLOWED_HOSTS = [
-    'https://hawkward-store.herokuapp.com',
+    'hawkward-store.herokuapp.com',
     'localhost',
     '127.0.0.1',
 ]
