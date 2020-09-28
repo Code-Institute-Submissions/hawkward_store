@@ -16,8 +16,10 @@
       </div>
     </div>
     <div class="col">
-      <button>Return to all Products</button>
-      <button>Go to your profile</button>
+      <form action="{% url 'payment_error' %}" method="POST" id="error-form">
+        <input type="hidden" value="{{ order }}" name="order" id="order">
+        <input type="hidden" value="{{ subscription }}" name="subscription" id="subscription">
+      </form>
     </div>
   </div>
 </div>

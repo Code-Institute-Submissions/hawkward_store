@@ -7,6 +7,11 @@
         <div class="col">
             {% if user.is_authenticated %}
             Hello, {{ user.username }}
+            {% if userprofile %}
+            {% for field in userprofile %}
+            <p>{{ field }}</p>
+            {% endfor %}
+            {% endif %}
             {% endif %}
         </div>
     </div>
@@ -21,6 +26,40 @@
                 <div>How many left to buy before next free item: {{ 7|sub:giftcard.counter }}</div>
             </div>
             {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {% if orders %}
+            {% for order in orders %}
+            <div class="col mb-4" style="background-color: beige;">
+                <p>Order Number:{{ order.order_number }}</p>
+                <p>Username: {{ order.user_profile }}</p>
+                <p>Order First Name: {{ order.first_name }}</p>
+                <p>Order Last Name: {{ order.last_name }}</p>
+                <p>Email: {{ order.email }}</p>
+                <div class="row">
+                    <div class="col">
+                        <p>Shipping Details:</p>
+                        {{ order.country }}
+                        {{ order.street_address }}
+                        {{ order.city }}
+                        {{ order.postcode }}
+                    </div>
+                </div>
+                <p>Total on Order: {{ order.total }}</p>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {% if subscription.subscription == True %}
+            <p>You have an active subscription.</p>
+            {% else %}
+            <p>You have no active subscription</p>
             {% endif %}
         </div>
     </div>

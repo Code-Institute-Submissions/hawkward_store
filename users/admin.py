@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Giftcards, UserProfile
+from .models import Giftcards, UserProfile, UserSubscriptions
 
 # Register your models here.
 
@@ -26,6 +26,13 @@ class UserProfileAdmin(admin.ModelAdmin):
         'postcode',
     )
 
+class UserSubscriptionsAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+        'subscription',
+    )
+
 
 admin.site.register(Giftcards, GiftcardsAdmin)
 admin.site.register(UserProfile, UserProfileAdmin)
+admin.site.register(UserSubscriptions, UserSubscriptionsAdmin)

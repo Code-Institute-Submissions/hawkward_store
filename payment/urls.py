@@ -14,4 +14,6 @@ urlpatterns = [
          name='subscription_payment_method'),
     path('subscription_backend/', views.subscription_backend,
          name='subscription_backend'),
+    path('payment_error/', views.payment_error,
+         name='payment_error'),
 ]

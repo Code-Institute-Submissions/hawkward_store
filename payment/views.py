@@ -1,10 +1,12 @@
-from django.shortcuts import render, redirect, reverse, get_object_or_404
+from django.shortcuts import render, redirect, reverse, get_object_or_404, HttpResponse
+from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
 
-from users.models import Giftcards, UserProfile
+from users.models import Giftcards, UserProfile, UserSubscriptions
 from products.models import ProductsStore
 from .models import Order, OrderItems
 from django.db.models import Q
@@ -23,6 +25,8 @@ import json
 
 def check_for_free_items(request):
     shopping_bag = request.session['shopping_bag']
+    if not shopping_bag:
+        return redirect('shopping_bag')
     counter = 0
     for product_id, quantity in shopping_bag.items():
         product = get_object_or_404(ProductsStore, pk=product_id)
@@ -140,8 +144,9 @@ def payment_processing(request):
 
                     context['payment_intent_secret'] = pi.client_secret
                     context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLIC_KEY
-
-                    return render(request, 'payment/3dsec.html', context)
+                    context['order'] = order.order_number
+                    result = render_to_string('payment/3dsec.html', context)
+                    return HttpResponse(result)
 
                 return redirect('payment_success')
             else:
@@ -217,7 +222,7 @@ def payment_success(request):
     return render(request, 'payment/payment_success.html')
 
 
-@login_required
+@ login_required
 def subscription(request):
     stripe_public_key = settings.STRIPE_PUBLIC_KEY
     context = {
@@ -226,9 +231,12 @@ def subscription(request):
     return render(request, 'payment/subscription.html', context)
 
 
-@require_POST
-@login_required
-def subscription_payment_method(request):
+@ require_POST
+@ login_required
+def subscription_payment_method(request):    
+    user_subscription = UserSubscriptions.objects.filter(user=request.user)
+    if user_subscription:
+        return redirect('users')
     stripe_secret_key = settings.STRIPE_SECRET_KEY
     stripe_public_key = settings.STRIPE_PUBLIC_KEY
     plan1 = settings.STRIPE_PLAN_MONTHLY_ID
@@ -266,47 +274,75 @@ def subscription_payment_method(request):
     return render(request, 'payment/subscription_intent.html', context)
 
 
-@require_POST
-@login_required
+@ require_POST
+@ login_required
 def subscription_backend(request):
     stripe_secret_key = settings.STRIPE_SECRET_KEY
     stripe.api_key = stripe_secret_key
     payment_intent_id = request.POST['payment_intent_id']
     payment_method_id = request.POST['payment_method_id']
     stripe_plan_id = request.POST['stripe_plan_id']
-    customer = stripe.Customer.create(
-        email=request.user.email,
-        payment_method=payment_method_id,
-        invoice_settings={
-            'default_payment_method': payment_method_id
-        }
-    )
-    stripe.Subscription.create(
-        customer=customer.id,
-        items=[
-            {
-                'plan': stripe_plan_id
-            },
-        ]
-    )
-    stripe.PaymentIntent.modify(
-        payment_intent_id,
-        payment_method=payment_method_id,
-        customer=customer.id
-    )
-    ret = stripe.PaymentIntent.confirm(
-        payment_intent_id
-    )
+    user_subscription = UserSubscriptions.objects.filter(user=request.user)
+    if not user_subscription:
+        new_subscription = UserSubscriptions(
+            user=request.user, subscription=True)
+        new_subscription.save()
+        try:
+            customer = stripe.Customer.create(
+                email=request.user.email,
+                payment_method=payment_method_id,
+                invoice_settings={
+                    'default_payment_method': payment_method_id
+                }
+            )
+            stripe.Subscription.create(
+                customer=customer.id,
+                items=[
+                    {
+                        'plan': stripe_plan_id
+                    },
+                ]
+            )
+            stripe.PaymentIntent.modify(
+                payment_intent_id,
+                payment_method=payment_method_id,
+                customer=customer.id
+            )
+            ret = stripe.PaymentIntent.confirm(
+                payment_intent_id
+            )
 
-    if ret.status == 'requires_action':
-        pi = stripe.PaymentIntent.retrieve(
-            payment_intent_id
-        )
-        context = {}
+            if ret.status == 'requires_action':
+                pi = stripe.PaymentIntent.retrieve(
+                    payment_intent_id
+                )
+                context = {}
 
-        context['payment_intent_secret'] = pi.client_secret
-        context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLIC_KEY
+                context['payment_intent_secret'] = pi.client_secret
+                context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLIC_KEY
+                context['subscription'] = 'yes'
 
-        return render(request, 'payment/3dsec.html', context)
+                return render(request, 'payment/3dsec.html', context)
 
-    return render(request, 'payment/subscription_success.html')
+        except Exception as e:
+            new_subscription.delete()
+            return HttpResponse(content=e, status=400)
+
+        return render(request, 'payment/subscription_success.html')
+    
+    return redirect('users')
+
+
+@require_POST
+@csrf_exempt
+def payment_error(request):
+    order_number = request.POST['order']
+    subscription = request.POST['subscription']
+    if order_number:
+        order = Order.objects.get(order_number=order_number)
+        order.delete()
+    if subscription == 'yes':
+        subscription = UserSubscriptions.objects.get(user=request.user)
+        subscription.delete()
+    
+    return redirect('shopping_bag')
