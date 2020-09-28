@@ -148,6 +148,20 @@ def payment_processing(request):
                     context['order'] = order.order_number
                     result = render_to_string('payment/3dsec.html', context)
                     return HttpResponse(result)
+                
+                cust_email = order.email
+                subject = render_to_string(
+                    'payment/confirmation_emails/confirmation_email_subject.txt',
+                    {'order': order})
+                body = render_to_string(
+                    'payment/confirmation_emails/confirmation_email_body.txt',
+                    {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL})    
+                send_mail(
+                    subject,
+                    body,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [cust_email]
+                )
 
                 return redirect('payment_success')
             else:
@@ -216,19 +230,6 @@ def payment_processing(request):
         'customer_email': customer_email,
         'payment_intent_id': payment_intent_id,
     }
-    cust_email = order.email
-    subject = render_to_string(
-        'checkout/confirmation_emails/confirmation_email_subject.txt',
-        {'order': order})
-    body = render_to_string(
-        'checkout/confirmation_emails/confirmation_email_body.txt',
-        {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL})    
-    send_mail(
-        subject,
-        body,
-        settings.DEFAULT_FROM_EMAIL,
-        [cust_email]
-    )
     return render(request, 'payment/payment.html', context)
 
 
