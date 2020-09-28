@@ -4,8 +4,12 @@ from .webhooks import webhook_received
 
 urlpatterns = [
     path('', views.check_for_free_items, name='check_for_free_items'),
-    path('payment_processing/', views.payment_processing,
-         name='payment_processing'),
+    path('payment/', views.payment,
+         name='payment'),
+    path('payment_method/', views.payment_method,
+         name='payment_method'),
+    path('payment_backend/', views.payment_backend,
+         name='payment_backend'),
     path('payment_success/', views.payment_success, name='payment_success'),
     path('subscription/', views.subscription, name='subscription'),
     path('wh/', webhook_received, name='webhook_received'),
