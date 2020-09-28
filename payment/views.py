@@ -65,79 +65,106 @@ def payment_processing(request):
     stripe_secret_key = settings.STRIPE_SECRET_KEY
 
     if request.method == 'POST':
-        shopping_bag = request.session.get('shopping_bag', {})
-        free_items = request.session.get('free_items', {})
-        form = {
-            'first_name': request.POST['first_name'],
-            'last_name': request.POST['last_name'],
-            'email': request.POST['email'],
-            'country': request.POST['country'],
-            'street_address': request.POST['street_address'],
-            'city': request.POST['city'],
-            'postcode': request.POST['postcode'],
-            'phone_number': request.POST['phone_number'],
-        }
+        try:
+            shopping_bag = request.session.get('shopping_bag', {})
+            free_items = request.session.get('free_items', {})
+            form = {
+                'first_name': request.POST['first_name'],
+                'last_name': request.POST['last_name'],
+                'email': request.POST['email'],
+                'country': request.POST['country'],
+                'street_address': request.POST['street_address'],
+                'city': request.POST['city'],
+                'postcode': request.POST['postcode'],
+                'phone_number': request.POST['phone_number'],
+            }
 
-        order_form = OrderForm(form)
-        if order_form.is_valid():
-            order = order_form.save(commit=False)
-            pid = request.POST.get('client_secret').split('_secret')[0]
-            order.stripe_pid = pid
-            order.total = int(request.session['total'])
-            order.all_products = json.dumps(shopping_bag)
-            order.free_products = json.dumps(free_items)
-            if request.user.is_authenticated:
-                user = User.objects.get(username=request.user)
-                order.user_profile = user
-            order.save()
-            for product_id, quantity in shopping_bag.items():
-                product = ProductsStore.objects.get(pk=product_id)
-                order_item = OrderItems(
-                    order=order,
-                    product=product,
-                    quantity=quantity,
-                )
-                order_item.save()
-            if 'save_info' in request.POST:
+            order_form = OrderForm(form)
+            if order_form.is_valid():
+                order = order_form.save(commit=False)
+                pid = request.POST['payment_intent_id']
+                order.stripe_pid = pid
+                order.total = int(request.session['total'])
+                order.all_products = json.dumps(shopping_bag)
+                order.free_products = json.dumps(free_items)
                 if request.user.is_authenticated:
                     user = User.objects.get(username=request.user)
-                    user_form = {
-                        'first_name': order.first_name,
-                        'last_name': order.last_name,
-                        'email': order.email,
-                        'country': order.country,
-                        'street_address': order.street_address,
-                        'city': order.city,
-                        'postcode': order.postcode,
-                        'phone_number': order.phone_number,
-                    }
-                    create_user_profile = UserProfileForm(user_form)
-                    if create_user_profile.is_valid():
-                        create_user_profile.save()
-            if 'shopping_bag' in request.session:
-                del request.session['shopping_bag']
-            if 'free_items' in request.session:
-                del request.session['free_items']
-            del request.session['total']
-            return redirect('payment_success')
-        else:
-            ''' reset giftcard to old state '''
-            for product_id, quantity in shopping_bag.items():
-                product = get_object_or_404(ProductsStore, pk=product_id)
-                if product.has_giftcard == True:
-                    giftcard_q_delete = Giftcards.objects.filter(
-                        Q(product_id=product_id) & Q(user=request.user))
-                    if giftcard_q_delete:
-                        giftcard_q_delete = Giftcards.objects.filter(
-                            Q(product_id=product_id) & Q(user=request.user))[0]
-                        old_counter = int(giftcard_q.counter + quantity)
-                        while old_counter >= 7:
-                            old_counter = int(giftcard_q.counter - 7)
-                        giftcard_q_delete.counter = old_counter
-                        giftcard_q_delete.save()
+                    order.user_profile = user
+                order.save()
+                for product_id, quantity in shopping_bag.items():
+                    product = ProductsStore.objects.get(pk=product_id)
+                    order_item = OrderItems(
+                        order=order,
+                        product=product,
+                        quantity=quantity,
+                    )
+                    order_item.save()
+                if 'save_info' in request.POST:
+                    if request.user.is_authenticated:
+                        user = User.objects.get(username=request.user)
+                        user_form = {
+                            'first_name': order.first_name,
+                            'last_name': order.last_name,
+                            'email': order.email,
+                            'country': order.country,
+                            'street_address': order.street_address,
+                            'city': order.city,
+                            'postcode': order.postcode,
+                            'phone_number': order.phone_number,
+                        }
+                        create_user_profile = UserProfileForm(user_form)
+                        if create_user_profile.is_valid():
+                            create_user_profile.save()
+                if 'shopping_bag' in request.session:
+                    del request.session['shopping_bag']
+                if 'free_items' in request.session:
                     del request.session['free_items']
+                    del request.session['total']
+                stripe.api_key = stripe_secret_key
+                payment_intent_id = request.POST['payment_intent_id']
+                payment_method_id = request.POST['payment_method_id']
+                stripe.PaymentIntent.modify(
+                    payment_intent_id,
+                    payment_method=payment_method_id
+                )
 
-            return redirect(reverse('products'))
+                ret = stripe.PaymentIntent.confirm(
+                    payment_intent_id
+                )
+
+                if ret.status == 'requires_action':
+                    pi = stripe.PaymentIntent.retrieve(
+                        payment_intent_id
+                    )
+                    context = {}
+
+                    context['payment_intent_secret'] = pi.client_secret
+                    context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLIC_KEY
+
+                    return render(request, 'payment/3dsec.html', context)
+
+                return redirect('payment_success')
+            else:
+                ''' reset giftcard to old state '''
+                for product_id, quantity in shopping_bag.items():
+                    product = get_object_or_404(ProductsStore, pk=product_id)
+                    if product.has_giftcard == True:
+                        giftcard_q_delete = Giftcards.objects.filter(
+                            Q(product_id=product_id) & Q(user=request.user))
+                        if giftcard_q_delete:
+                            giftcard_q_delete = Giftcards.objects.filter(
+                                Q(product_id=product_id) & Q(user=request.user))[0]
+                            old_counter = int(giftcard_q.counter + quantity)
+                            while old_counter >= 7:
+                                old_counter = int(giftcard_q.counter - 7)
+                            giftcard_q_delete.counter = old_counter
+                            giftcard_q_delete.save()
+                        del request.session['free_items']
+
+                return redirect(reverse('products'))
+        except Exception as e:
+            order.delete()
+            return HttpResponse(content=e, status=400)
 
     shopping_bag = request.session.get('shopping_bag', {})
     free_items = request.session.get('free_items', {})
@@ -162,10 +189,16 @@ def payment_processing(request):
         return redirect('products')
     stripe_total = round(total * 100)
     stripe.api_key = stripe_secret_key
-    intent = stripe.PaymentIntent.create(
+
+    payment_intent = stripe.PaymentIntent.create(
         amount=stripe_total,
         currency=settings.STRIPE_CURRENCY,
+        payment_method_types=['card'],
     )
+
+    customer_email = request.user.email
+    secret_key = payment_intent.client_secret
+    payment_intent_id = payment_intent.id
     order_form = OrderForm()
     context = {
         'total': total,
@@ -173,7 +206,9 @@ def payment_processing(request):
         'total_saved': total_saved,
         'order_form': order_form,
         'stripe_public_key': stripe_public_key,
-        'client_secret': intent.client_secret,
+        'secret_key': secret_key,
+        'customer_email': customer_email,
+        'payment_intent_id': payment_intent_id,
     }
     return render(request, 'payment/payment.html', context)
 
@@ -203,15 +238,15 @@ def subscription_payment_method(request):
     payment_method = 'card'
     customer_email = request.user.email
     amount = 0
-    plan = ''
+    plan = request.POST['subscription_plan']
 
-    if request.POST['subscription_plan'] == 'plan1':
-        plan = plan1
+    if plan == 'plan1':
+        plan_id = plan1
         amount = 1000
-    elif request.POST['subscription_plan'] == 'plan2':
-        plan = plan2
+    elif plan == 'plan2':
+        plan_id = plan2
         amount = 10000
-    stripe_plan_id = plan
+    stripe_plan_id = plan_id
 
     payment_intent = stripe.PaymentIntent.create(
         amount=amount,
@@ -241,7 +276,7 @@ def subscription_backend(request):
     stripe_plan_id = request.POST['stripe_plan_id']
     customer = stripe.Customer.create(
         email=request.user.email,
-        payment_method_id=payment_method_id,
+        payment_method=payment_method_id,
         invoice_settings={
             'default_payment_method': payment_method_id
         }
@@ -259,7 +294,19 @@ def subscription_backend(request):
         payment_method=payment_method_id,
         customer=customer.id
     )
-    stripe.PaymentIntent.confirm(
+    ret = stripe.PaymentIntent.confirm(
         payment_intent_id
     )
+
+    if ret.status == 'requires_action':
+        pi = stripe.PaymentIntent.retrieve(
+            payment_intent_id
+        )
+        context = {}
+
+        context['payment_intent_secret'] = pi.client_secret
+        context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLIC_KEY
+
+        return render(request, 'payment/3dsec.html', context)
+
     return render(request, 'payment/subscription_success.html')

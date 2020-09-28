@@ -8,15 +8,13 @@
                 {% csrf_token %}
                 <p>You are setting up a subscription:</p>
                 <label for="subscription_plan">Choose a subscription:</label>
-                <select name="subscription_plan" id="subscription_plan" required>
-                    <option value="plan1">10.00 $</option>
-                    <option value="plan2">100.00 $</option>
+                <select name="subscription_plan" id="subscription_plan" required>                    
+                    <option value="" selected disabled>Please select an option</option>
+                    <option value="plan1" >Monthly at 10.00 $</option>
+                    <option value="plan2">Yearly at 100.00 $</option>
                 </select>
-                <div class="form-group">
-                    <label for="renewal">Do you want automatic renewal of subscription or one time payment</label>
-                </div>
                 <div class="my-3"></div>
-                <button type="submit">Continue</button>
+                <button type="submit" class="btn btn-navbar">Continue</button>
             </form>
         </div>
     </div>

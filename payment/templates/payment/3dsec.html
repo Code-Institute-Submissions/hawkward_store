@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_js %}
+<script src="{% static 'payment/js/3dsec.js' %}"></script>
+<script>
+  _3dsec('{{ STRIPE_PUBLISHABLE_KEY }}', '{{payment_intent_secret}}');
+</script>
+{% endblock extra_js %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <div id="3ds_result">
+      </div>
+    </div>
+    <div class="col">
+      <button>Return to all Products</button>
+      <button>Go to your profile</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
