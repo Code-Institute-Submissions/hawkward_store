@@ -282,10 +282,10 @@ def subscription_backend(request):
     payment_intent_id = request.POST['payment_intent_id']
     payment_method_id = request.POST['payment_method_id']
     stripe_plan_id = request.POST['stripe_plan_id']
-    user_subscription = UserSubscriptions.objects.filter(user=request.user)
+    user_subscription = UserSubscriptions.objects.filter(user=request.user.username)
     if not user_subscription:
         new_subscription = UserSubscriptions(
-            user=request.user, subscription=True)
+            user=request.user.username, subscription=True)
         new_subscription.save()
         try:
             customer = stripe.Customer.create(
@@ -295,7 +295,7 @@ def subscription_backend(request):
                     'default_payment_method': payment_method_id
                 }
             )
-            stripe.Subscription.create(
+            s = stripe.Subscription.create(
                 customer=customer.id,
                 items=[
                     {
@@ -303,6 +303,8 @@ def subscription_backend(request):
                     },
                 ]
             )
+            new_subscription.s_id = s.id
+            new_subscription.save()
             stripe.PaymentIntent.modify(
                 payment_intent_id,
                 payment_method=payment_method_id,
@@ -346,3 +348,14 @@ def payment_error(request):
         subscription.delete()
     
     return redirect('shopping_bag')
+
+@login_required
+def delete_subscription(request):
+    stripe_secret_key = settings.STRIPE_SECRET_KEY
+    stripe.api_key = stripe_secret_key
+    usersubscription = UserSubscriptions.objects.get(user=request.user.username)
+    sub_id = usersubscription.s_id
+    stripe.Subscription.delete(sub_id)
+    usersubscription.subscription = False
+    usersubscription.save()
+    return redirect('users')

@@ -29,3 +29,4 @@ class UserProfile(models.Model):
 class UserSubscriptions(models.Model):
     user = models.CharField(max_length=250, blank=False, null=False)
     subscription = models.BooleanField(default=False, null=True, blank=True)
+    s_id = models.CharField(max_length=250, null=True, blank=True)

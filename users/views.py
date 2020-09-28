@@ -11,11 +11,12 @@ def users(request):
     userprofile = UserProfile.objects.filter(user=request.user)
     if userprofile:
         context['userprofile'] = userprofile
-    subscription = UserSubscriptions.objects.filter(user=request.user)
+    subscription = UserSubscriptions.objects.filter(user=request.user.username)
+    if subscription:        
+        context['subscription'] = UserSubscriptions.objects.filter(user=request.user.username)[0]
     giftcards = Giftcards.objects.filter(user=request.user)
     orders = Order.objects.filter(user_profile=request.user)
 
     context['giftcards'] = giftcards
-    context['subscription'] = subscription
     context['orders'] = orders
     return render(request, 'users/base.html', context)

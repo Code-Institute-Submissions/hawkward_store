@@ -56,10 +56,17 @@
     </div>
     <div class="row">
         <div class="col">
+            {% if subscription %}
             {% if subscription.subscription == True %}
-            <p>You have an active subscription.</p>
+            <p>You have an active subscription!</p>
+            <a href="{% url 'delete_subscription' %}" class="btn btn-navbar">Cancel your subscription</a>
+            {% else %}            
+            <p>You have no current active subscription.</p>
+            <a href="{% url 'subscription' %}" class="btn btn-navbar">Set up a new subscription here!</a>
+            {% endif %}
             {% else %}
-            <p>You have no active subscription</p>
+            <p>You have no active subscription.</p>
+            <a href="{% url 'subscription' %}" class="btn btn-navbar">Set up a subscription here!</a>
             {% endif %}
         </div>
     </div>
