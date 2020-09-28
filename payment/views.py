@@ -230,9 +230,9 @@ def payment_backend(request):
                 if giftcard_q_delete:
                     giftcard_q_delete = Giftcards.objects.filter(
                         Q(product_id=product_id) & Q(user=request.user))[0]
-                    old_counter = int(giftcard_q.counter + quantity)
+                    old_counter = int(giftcard_q_delete.counter + quantity)
                     while old_counter >= 7:
-                        old_counter = int(giftcard_q.counter - 7)
+                        old_counter = int(giftcard_q_delete.counter - 7)
                     giftcard_q_delete.counter = old_counter
                     giftcard_q_delete.save()
                 del request.session['free_items']
