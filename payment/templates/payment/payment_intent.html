@@ -8,7 +8,7 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <form action="{% url 'payment_backend' %}" method="POST" id="payment-form">
+            <form action="{% url 'payment_backend' %}" method="POST" id="subscription-form">
                 {% csrf_token %}
                 <label for="card-element">
                     Credit or debit card
@@ -30,7 +30,7 @@
 {% endblock %}
 {% block postloadjs %}
 {{ block.super }}
-<script src="{% static 'payment/js/payment.js' %}"></script>
+<script src="{% static 'payment/js/subscription.js' %}"></script>
 <script>
     card('{{stripe_public_key}}', '{{customer_email}}');
 </script>
