@@ -200,7 +200,6 @@ def subscription_payment_method(request):
     plan2 = settings.STRIPE_PLAN_YEARLY_ID
     stripe.api_key = stripe_secret_key
     currency = settings.STRIPE_CURRENCY
-    renewal = request.POST.get('renewal', True)
     payment_method = 'card'
     customer_email = request.user.email
     amount = 0
@@ -226,9 +225,8 @@ def subscription_payment_method(request):
         'stripe_public_key': stripe_public_key,
         'customer_email': customer_email,
         'payment_intent_id': payment_intent_id,
-        'renewal': renewal,
         'stripe_plan_id': stripe_plan_id,
-        }
+    }
 
     return render(request, 'payment/subscription_intent.html', context)
 
@@ -241,34 +239,26 @@ def subscription_backend(request):
     payment_intent_id = request.POST['payment_intent_id']
     payment_method_id = request.POST['payment_method_id']
     stripe_plan_id = request.POST['stripe_plan_id']
-    renewal = request.POST['renewal']
-
-    if renewal == True:
-        customer = stripe.Customer.create(
-            email=request.user.email,
-            payment_method_id=payment_method_id,
-            invoice_settings={
-                'default_payment_method': payment_method_id
-            }
-        )
-        stripe.Subscription.create(
-            customer=customer.id,
-            items=[
-                {
-                    'plan': stripe_plan_id
-                },
-            ]
-        )
-        stripe.PaymentIntent.modify(
-            payment_intent_id,
-            payment_method=payment_method_id,
-            customer=customer.id
-        )
-    else:
-        stripe.PaymentIntent.modify(
-            payment_intent_id,
-            payment_method=payment_method_id
-        )
+    customer = stripe.Customer.create(
+        email=request.user.email,
+        payment_method_id=payment_method_id,
+        invoice_settings={
+            'default_payment_method': payment_method_id
+        }
+    )
+    stripe.Subscription.create(
+        customer=customer.id,
+        items=[
+            {
+                'plan': stripe_plan_id
+            },
+        ]
+    )
+    stripe.PaymentIntent.modify(
+        payment_intent_id,
+        payment_method=payment_method_id,
+        customer=customer.id
+    )
     stripe.PaymentIntent.confirm(
         payment_intent_id
     )
