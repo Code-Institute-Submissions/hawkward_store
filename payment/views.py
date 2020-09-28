@@ -135,13 +135,13 @@ def payment_method(request):
         order.stripe_pid = payment_intent.id
         order.save()
         for product_id, quantity in shopping_bag.items():
-                product = ProductsStore.objects.get(pk=product_id)
-                order_item = OrderItems(
-                    order=order,
-                    product=product,
-                    quantity=quantity,
-                )
-                order_item.save()
+            product = ProductsStore.objects.get(pk=product_id)
+            order_item = OrderItems(
+                order=order,
+                product=product,
+                quantity=quantity,
+            )
+            order_item.save()
         if 'save_info' in request.POST:
             if request.user.is_authenticated:
                 user = User.objects.get(username=request.user)
@@ -184,13 +184,9 @@ def payment_backend(request):
     order_number = request.POST['order_number']
     order = get_object_or_404(Order, order_number=order_number)
     try:
-        stripe.PaymentIntent.modify(
+        ret = stripe.PaymentIntent.confirm(
             payment_intent_id,
             payment_method=payment_method_id
-        )
-
-        ret = stripe.PaymentIntent.confirm(
-            payment_intent_id
         )
 
         if ret.status == 'requires_action':
@@ -202,8 +198,7 @@ def payment_backend(request):
             context['payment_intent_secret'] = pi.client_secret
             context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLIC_KEY
             context['order'] = order.order_number
-            result = render_to_string('payment/3dsec.html', context)
-            return HttpResponse(result)
+            return render(request, 'payment/3dsec.html', context)
 
         if 'shopping_bag' in request.session:
             del request.session['shopping_bag']
@@ -239,6 +234,7 @@ def payment_backend(request):
                     giftcard_q_delete.counter = old_counter
                     giftcard_q_delete.save()
                 del request.session['free_items']
+        
         return redirect('payment_success')
     except Exception as e:
         order.delete()
@@ -335,20 +331,17 @@ def subscription_backend(request):
                     },
                 ]
             )
+            latest_invoice = stripe.Invoice.retrieve(s.latest_invoice)
+
+            ret = stripe.PaymentIntent.confirm(
+                latest_invoice.payment_intent
+            )
             new_subscription.s_id = s.id
             new_subscription.save()
-            stripe.PaymentIntent.modify(
-                payment_intent_id,
-                payment_method=payment_method_id,
-                customer=customer.id
-            )
-            ret = stripe.PaymentIntent.confirm(
-                payment_intent_id
-            )
 
             if ret.status == 'requires_action':
                 pi = stripe.PaymentIntent.retrieve(
-                    payment_intent_id
+                    latest_invoice.payment_intent
                 )
                 context = {}
 

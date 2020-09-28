@@ -11,6 +11,7 @@
             {% endif %}
         </div>
     </div>
+    {% if products %}
     <div class="row">
         <div class="col">
             {% for item in products %}
@@ -33,5 +34,12 @@
             <button class="btn btn-navbar"><a href="{% url 'check_for_free_items' %}">Checkout Success</a></button>
         </div>
     </div>
+    {% else %}
+    <div class="row">
+        <div class="col">
+            <h3>There is nothing in your Shopping Bag!</h3>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
