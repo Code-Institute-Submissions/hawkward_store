@@ -104,6 +104,7 @@ def payment_method(request):
     stripe_public_key = settings.STRIPE_PUBLIC_KEY
     stripe_secret_key = settings.STRIPE_SECRET_KEY
     stripe.api_key = stripe_secret_key
+    currency = settings.STRIPE_CURRENCY
 
     shopping_bag = request.session.get('shopping_bag', {})
     free_items = request.session.get('free_items', {})
@@ -129,7 +130,7 @@ def payment_method(request):
 
         payment_intent = stripe.PaymentIntent.create(
             amount=request.session['stripe_total'],
-            currency=settings.STRIPE_CURRENCY,
+            currency=currency,
         )
 
         order.stripe_pid = payment_intent.id
