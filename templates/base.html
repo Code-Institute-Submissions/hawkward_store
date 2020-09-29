@@ -35,7 +35,7 @@
         <!-- Sidebar  -->
         <nav id="sidebar">
             <div class="sidebar-header no-padding">
-                <a class="navbar-brand no-padding" href="#">
+                <a class="navbar-brand no-padding" href="{% url 'index' %}">
                     <img src="{{ MEDIA_URL }}hawkward_logo.jpg" width="250" height="150" alt="logo" />
                 </a>
             </div>
@@ -50,7 +50,7 @@
                     </form>
                 </li>
                 <li>
-                    <a href="#" class="text-center">Page Information</a>
+                    <a href="{% url 'index' %}" class="text-center">Page Information</a>
                 </li>
                 <li>
                     <form method="GET" action="{% url 'products' %}">
@@ -136,9 +136,6 @@
             <ul class="list-unstyled CTAs">
                 <li>
                     <a href="{% url 'subscription' %}">Subscribe</a>
-                </li>
-                <li>
-                    <a href="#">Newsletter</a>
                 </li>
             </ul>
         </nav>

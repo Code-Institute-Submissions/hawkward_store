@@ -31,7 +31,8 @@ def delete_item_from_bag(request, product_id):
     shopping_bag.pop(product_id)
     
     request.session['shopping_bag'] = shopping_bag
-    return redirect('shopping_bag')
+    return redirect('shopping_bag')    
+    shopping_bag[product_id] = 0
 
 def change_quantity(request, product_id):
     shopping_bag = request.session['shopping_bag']
