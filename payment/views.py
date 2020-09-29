@@ -98,6 +98,7 @@ def payment(request):
                 f'{product_id}': quantity,
             })
     total = int(total_price - total_saved)
+    request.session['total'] = total
     if total < 0:
         del request.session['free_items']
         del request.session['total']
@@ -177,7 +178,6 @@ def payment_method(request):
                 create_user_profile = UserProfileForm(user_form)
                 if create_user_profile.is_valid():
                     create_user_profile.save()
-    del request.session['stripe_total']
     customer_email = order.email
     secret_key = payment_intent.client_secret
     payment_intent_id = payment_intent.id
@@ -224,12 +224,6 @@ def payment_backend(request):
             context['cust_email'] = request.POST['customer_email']
             return render(request, 'payment/3dsec.html', context)
 
-        if 'shopping_bag' in request.session:
-            del request.session['shopping_bag']
-        if 'free_items' in request.session:
-            del request.session['free_items']
-            del request.session['total']
-
         cust_email = request.POST['customer_email']
         subject = render_to_string(
             'payment/confirmation_emails/confirmation_email_subject.txt',
@@ -257,10 +251,12 @@ def payment_backend(request):
                         old_counter = int(giftcard_q_delete.counter - 7)
                     giftcard_q_delete.counter = old_counter
                     giftcard_q_delete.save()
-                del request.session['free_items']
-        del request.session['shopping_bag']
-        del request.session['free_items']
-
+                
+        if 'shopping_bag' in request.session:
+            del request.session['shopping_bag']
+        if 'free_items' in request.session:
+            del request.session['free_items']
+            del request.session['total']
         return redirect('payment_success')
     except Exception as e:
         order.delete()
@@ -287,7 +283,9 @@ def payment_success(request):
             body,
             settings.DEFAULT_FROM_EMAIL,
             [cust_email]
-        )    
+        )
+        
+        del request.session['stripe_total']
         del request.session['shopping_bag']
         del request.session['free_items']
     return render(request, 'payment/payment_success.html')
