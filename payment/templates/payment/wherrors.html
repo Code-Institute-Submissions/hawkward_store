@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <p>{{ e }}</p>
+        </div>
+        <div class="col">
+            <a href="{% url 'users' %}" class="btn btn-navbar">Return to your page!</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -191,6 +191,9 @@ def payment_backend(request):
             payment_method=payment_method_id
         )
 
+        if ret.status == 'requires_payment_method':
+            order.delete()
+            return redirect('shopping_bag')
         if ret.status == 'requires_action':
             pi = stripe.PaymentIntent.retrieve(
                 payment_intent_id
@@ -200,6 +203,7 @@ def payment_backend(request):
             context['payment_intent_secret'] = pi.client_secret
             context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLIC_KEY
             context['order'] = order.order_number
+            context['cust_email'] = request.POST['customer_email']
             return render(request, 'payment/3dsec.html', context)
 
         if 'shopping_bag' in request.session:
@@ -236,21 +240,47 @@ def payment_backend(request):
                     giftcard_q_delete.counter = old_counter
                     giftcard_q_delete.save()
                 del request.session['free_items']
-        
+
         return redirect('payment_success')
     except Exception as e:
         order.delete()
         return HttpResponse(content=e, status=400)
 
 
+@csrf_exempt
 def payment_success(request):
+    if request.method == 'POST':
+        subscription = request.POST['subscription']
+        if subscription == 'yes':
+            return render(request, 'payment/subscription_success.html')
+        order_number = request.POST['order']
+        order = Order.objects.get(order_number=order_number)
+        cust_email = request.POST['cust_email']
+        subject = render_to_string(
+            'payment/confirmation_emails/confirmation_email_subject.txt',
+            {'order': order})
+        body = render_to_string(
+            'payment/confirmation_emails/confirmation_email_body.txt',
+            {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL})
+        send_mail(
+            subject,
+            body,
+            settings.DEFAULT_FROM_EMAIL,
+            [cust_email]
+        )
     return render(request, 'payment/payment_success.html')
 
 
 @login_required
 def subscription(request):
+    user_subscription = UserSubscriptions.objects.filter(
+        user=request.user.username)
+    if user_subscription:
+        user_subscription = UserSubscriptions.objects.filter(
+            user=request.user.username)[0]
     stripe_public_key = settings.STRIPE_PUBLIC_KEY
     context = {
+        'user_subscription': user_subscription,
         'stripe_public_key': stripe_public_key,
     }
     return render(request, 'payment/subscription.html', context)
@@ -288,7 +318,6 @@ def subscription_payment_method(request):
     payment_intent = stripe.PaymentIntent.create(
         amount=amount,
         currency=currency,
-        payment_method_types=['card'],
     )
     secret_key = payment_intent.client_secret
     payment_intent_id = payment_intent.id
@@ -309,14 +338,16 @@ def subscription_backend(request):
     stripe_secret_key = settings.STRIPE_SECRET_KEY
     stripe.api_key = stripe_secret_key
     payment_intent_id = request.POST['payment_intent_id']
-    payment_method_id = request.POST['payment_method_id']
+    if request.POST['payment_method_id']:
+        payment_method_id = request.POST['payment_method_id']
+    else:
+        return redirect('users')
     stripe_plan_id = request.POST['stripe_plan_id']
     user_subscription = UserSubscriptions.objects.filter(
         user=request.user.username)
     if not user_subscription:
         new_subscription = UserSubscriptions(
             user=request.user.username, subscription=True)
-        new_subscription.save()
         try:
             customer = stripe.Customer.create(
                 email=request.user.email,
@@ -336,30 +367,36 @@ def subscription_backend(request):
             latest_invoice = stripe.Invoice.retrieve(s.latest_invoice)
 
             ret = stripe.PaymentIntent.confirm(
-                latest_invoice.payment_intent
+                latest_invoice.payment_intent,
             )
-            new_subscription.s_id = s.id
-            new_subscription.save()
-
+            if ret.status == 'requires_payment_method':
+                stripe.Customer.delete(customer.id)
+                new_subscription.delete()
+                return render('subscription')
             if ret.status == 'requires_action':
+                new_subscription.s_id = s.id
+                new_subscription.save()
                 pi = stripe.PaymentIntent.retrieve(
                     latest_invoice.payment_intent
                 )
+
                 context = {}
 
                 context['payment_intent_secret'] = pi.client_secret
                 context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLIC_KEY
                 context['subscription'] = 'yes'
+                context['customer_id'] = customer.id
 
                 return render(request, 'payment/3dsec.html', context)
 
+            new_subscription.s_id = s.id
+            new_subscription.save()
+            return render(request, 'payment/subscription_success.html')
         except Exception as e:
-            new_subscription.delete()
-            return HttpResponse(content=e, status=400)
-
-        return render(request, 'payment/subscription_success.html')
-
-    return redirect('users')
+            context = {
+                'e': e
+            }
+            return render(request, 'payment/wherrors.html', context)
 
 
 @require_POST
@@ -367,13 +404,16 @@ def subscription_backend(request):
 def payment_error(request):
     order_number = request.POST['order']
     subscription = request.POST['subscription']
+    customer_id = request.POST['customer_id']
     if order_number:
         order = Order.objects.get(order_number=order_number)
         order.delete()
     if subscription == 'yes':
-        subscription = UserSubscriptions.objects.get(user=request.user)
+        stripe.Customer.delete(customer.id)
+        subscription = UserSubscriptions.objects.get(
+            user=request.user.username)
         subscription.delete()
-
+        return redirect('users')
     return redirect('shopping_bag')
 
 
@@ -383,8 +423,12 @@ def delete_subscription(request):
     stripe.api_key = stripe_secret_key
     usersubscription = UserSubscriptions.objects.get(
         user=request.user.username)
+    if not usersubscription:
+        return redirect('users')
     sub_id = usersubscription.s_id
+    if not sub_id:
+        usersubscription.delete()
+        return redirect('users')
     stripe.Subscription.delete(sub_id)
-    usersubscription.subscription = False
-    usersubscription.save()
+    usersubscription.delete()
     return redirect('users')

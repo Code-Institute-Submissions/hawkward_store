@@ -2,6 +2,7 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+import json
 
 import stripe
 @require_POST
@@ -37,18 +38,24 @@ def webhook_received(request):
         # The status of the invoice will show up as paid. Store the status in your
         # database to reference when a user accesses your service to avoid hitting rate
         # limits.
-        print(data)
+        return render(request, 'payment/subscription_success.html')
 
     if event_type == 'invoice.payment_failed':
         # If the payment fails or the customer does not have a valid payment method,
         # an invoice.payment_failed event is sent, the subscription becomes past_due.
         # Use this webhook to notify your user that their payment has
         # failed and to retrieve new card details.
-        print(data)
+        context = {
+            'data': data
+        }
+        return render(request, 'payment/wherrors.html', conetxt)
 
     if event_type == 'customer.subscription.deleted':
         # handle subscription cancelled automatically based
         # upon your subscription settings. Or if the user cancels it.
-        print(data)
+        context = {
+            'data': data
+        }
+        return render(request, 'payment/wherrors.html', conetxt)
 
     return jsonify({'status': 'success'})

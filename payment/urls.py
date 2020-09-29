@@ -22,4 +22,6 @@ urlpatterns = [
          name='payment_error'),
     path('delete_subscription/', views.delete_subscription,
          name='delete_subscription'),
+    path('wherrors/', webhook_received,
+         name='webhook_received'),
 ]

@@ -2,6 +2,13 @@
 {% load static %}
 {% block content %}
 <div class="container">
+    {% if user_subscription %}
+    <div class="row">
+        <div class="col">
+            <p>You already have an active Subscription!</p>
+        </div>
+    </div>
+    {% else %}
     <div class="row">
         <div class="col">
             <form action="{% url 'subscription_payment_method' %}" method="POST">
@@ -18,5 +25,6 @@
             </form>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
