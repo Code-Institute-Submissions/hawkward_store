@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container">
     <div class="row m-5">
-        <div class="col">
+        <div class="col-6">
             {% if user.is_authenticated %}
             Hello, {{ user.username }}
             {% if userprofile %}
@@ -12,6 +12,20 @@
             <p>{{ field }}</p>
             {% endfor %}
             {% endif %}
+            {% endif %}
+        </div>
+        <div class="col-6">
+            {% if subscription %}
+            {% if subscription.subscription == True %}
+            <p>You have an active subscription!</p>
+            <a href="{% url 'delete_subscription' %}" class="btn btn-navbar">Cancel your subscription</a>
+            {% else %}
+            <p>You have no current active subscription.</p>
+            <a href="{% url 'subscription' %}" class="btn btn-navbar">Set up a new subscription here!</a>
+            {% endif %}
+            {% else %}
+            <p>You have no active subscription.</p>
+            <a href="{% url 'subscription' %}" class="btn btn-navbar">Set up a subscription here!</a>
             {% endif %}
         </div>
     </div>
@@ -32,43 +46,49 @@
     <div class="row">
         <div class="col">
             {% if orders %}
-            {% for order in orders %}
-            <div class="col mb-4" style="background-color: beige;">
-                <p>Order Number:{{ order.order_number }}</p>
-                <p>Username: {{ order.user_profile }}</p>
-                <p>Order First Name: {{ order.first_name }}</p>
-                <p>Order Last Name: {{ order.last_name }}</p>
-                <p>Email: {{ order.email }}</p>
-                <div class="row">
-                    <div class="col">
-                        <p>Shipping Details:</p>
-                        {{ order.country }}
-                        {{ order.street_address }}
-                        {{ order.city }}
-                        {{ order.postcode }}
+            <div class="accordion" id="accordion">
+                {% for order in orders %}
+                <div class="card m-1">
+                    <div class="card-header btn-navbar text-center" id="h{{ order.order_number }}">
+                        <h2 class="mb-0">
+                            <button class="btn btn-navbar border-0" type="button" data-toggle="collapse"
+                                data-target="#c{{ order.order_number }}" aria-expanded="false"
+                                aria-controls="c{{ order.order_number }}">
+                                Order Number: {{ order.order_number }}
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="c{{ order.order_number }}" class="collapse""
+                        data-parent=" #accordion" aria-labelledby="h{{ order.order_number }}">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <h5>Personal Details:</h5>
+                                    <p>Username: {{ order.user_profile }}</p>
+                                    <p>Order First Name: {{ order.first_name }}</p>
+                                    <p>Order Last Name: {{ order.last_name }}</p>
+                                    <p>Email: {{ order.email }}</p>
+                                </div>
+                                <div class="col-6">
+                                    <h5>Shipping Details:</h5>
+                                    <p>Country: {{ order.country }}</p>
+                                    <p>Street Address: {{ order.street_address }}</p>
+                                    <p>City: {{ order.city }}</p>
+                                    <p>Postcode: {{ order.postcode }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <p>Total on Order: {{ order.total }}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <p>Total on Order: {{ order.total }}</p>
+                {% endfor %}
             </div>
-            {% endfor %}
-            {% endif %}
         </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            {% if subscription %}
-            {% if subscription.subscription == True %}
-            <p>You have an active subscription!</p>
-            <a href="{% url 'delete_subscription' %}" class="btn btn-navbar">Cancel your subscription</a>
-            {% else %}            
-            <p>You have no current active subscription.</p>
-            <a href="{% url 'subscription' %}" class="btn btn-navbar">Set up a new subscription here!</a>
-            {% endif %}
-            {% else %}
-            <p>You have no active subscription.</p>
-            <a href="{% url 'subscription' %}" class="btn btn-navbar">Set up a subscription here!</a>
-            {% endif %}
-        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

@@ -2,10 +2,75 @@
 {% load static %}
 
 {% block content %}
-<div class="container">
+<div class="container base-content">
     <div class="row">
-        <div class="col">
-            <p>test</p>
+        <div class="col text-center">
+            <h3>Welcome to the Hawkward Store!</h3>
+        </div>
+        <div class="row m-3">
+            <div class="col-12 mt-3">
+                <span>Every 7nth food product of the same type is for free! You must be logged in in order to use this
+                    discount!</span>
+            </div>
+            <div class="col-12 mt-3">
+                <span>This is a store about animal products and you are free to buy whatever you want without
+                    having to log
+                    in!</span>
+            </div>
+        </div>
+        <div class="row m-3">
+            <div class="col mt-3">
+                <h4 class="text-center mb-3">We also offer a subscription service!</h4>
+                <span>You will get a random item selected from our store each month sent to your home! <br>
+                    In order to set up a subscription you have to be logged in</span>
+            </div>
+        </div>
+    </div>
+    <h4 class="m-3 text-center">This month's free subscription item!</h4>
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card">
+                <div class="m-auto">
+                    {% if product.image_url %}
+                    <a href="{% url 'product_information' product.id %}">
+                        <img class="card-img-top" src="{{ product.image_url }}" alt="{{ product.name }}">
+                    </a>
+                    {% else %}
+                    <a href="{% url 'product_information' product.id %}">
+                        <img class="card-img-top" src="{{ MEDIA_URL }}noimage.png" alt="{{ product.name }}">
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="mb-0">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text text-truncate">{{ product.description }}</p>
+                    </div>
+                    <ul class="list-group list-group-flush text-right">
+                        <li class="list-group-item">Price: ${{ product.price }}</li>
+                        <li class="list-group-item">Category: {{ product.category.friendly_name }}</li>
+                    </ul>
+                    <div class="card-body">
+                        <div class="row m-2">
+                            <div class="col text-center">
+                                <a href="{% url 'product_information' product.id %}"
+                                    class="card-link btn btn-navbar">Product Info</a>
+                            </div>
+                        </div>
+                        {% if request.user.is_superuser %}
+                        <div class="row m-2">
+                            <div class="col-6 text-left">
+                                <a href="{% url 'delete_product' product.id %}"
+                                    class="card-link btn btn-danger">Delete</a>
+                            </div>
+                            <div class="col-6 text-right">
+                                <a href="{% url 'edit_product' product.id %}" class="card-link btn btn-navbar">Edit</a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

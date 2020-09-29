@@ -7,59 +7,84 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container base-content">
     <div class="row">
-        <div class="col">
+        <div class="col-lg-4 order-lg-2 mb-4">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span>Your cart</span>
+                <span class="badge badge-dark badge-pill">{{ total_products }}</span>
+            </h4>
+            <ul class="list-group mb-3">
+                {% for item in products %}
+                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                    <div>
+                        <h6 class="my-0">{{ item.product.name }}</h6>
+                        <small class="text-muted truncate">Price per item: ${{ item.product.price }}</small><br>
+                        <small>Amount purchased: {{ item.quantity }}</small>
+                    </div>
+                    <span class="text-muted">Total:<br>${{ item.quantity|mul:item.product.price }}</span>
+                </li>
+                {% endfor %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>Total (USD)</span>
+                    <strong>${{ total_price }}</strong>
+                </li>
+                {% if total_saved != 0 %}
+                <li class="list-group-item d-flex justify-content-between bg-light">
+                    <div class="text-success">
+                        <h6 class="my-0">Giftcard used:</h6>
+                    </div>
+                    <span class="text-success">-${{ total_saved }}</span>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="col-lg-8 order-lg-1">
+            <h4 class="mb-3">Billing address</h4>
             <form action="{% url 'payment_method' %}" method="POST" id="payment-form">
                 {% csrf_token %}
-                <fieldset class="rounded px-3 mb-5">
-                    <legend class="fieldset-label small text-black px-2 w-auto">Details</legend>
+                <div class="row">
                     {% for field in order_form %}
-                    <p>{{ field.name }}</p>
-                    <p>{{ field }}</p>
-                    {% endfor %}
-                    {% if form.errors %}
-                    <ul class="mb-2">
-                      {% for field in form %}
-                      {% for error in field.errors %}
-                      <li>{{ error|escape }}</li>
-                      {% endfor %}
-                      {% endfor %}
-                      {% for error in form.non_field_errors %}
-                      <li>{{ error|escape }}</li>
-                      {% endfor %}
-                    </ul>
+                    {% if field.name == 'first_name' %}
+                    <div class="col-md-6 mb-3">
+                        <input type="{{ field.type }}" name="{{ field.name }}" id="id_{{ field.name }}"
+                            maxlength="{{field.field.max_length}}" placeholder="First Name" class="form-control" required>
+                    </div>
+                    {% elif field.name == 'last_name' %}
+                    <div class="col-md-6 mb-3">
+                        <input type="{{ field.type }}" name="{{ field.name }}" id="id_{{ field.name }}"
+                            maxlength="{{field.field.max_length}}" placeholder="First Name" class="form-control" required>
+                    </div>
+                    {% else %}
+                    <div class="col-12 mb-3">
+                        <input type="{{ field.type }}" name="{{ field.name }}" id="id_{{ field.name }}"
+                            maxlength="{{field.field.max_length}}" placeholder="{{ field.name }}" class="form-control" required>
+                    </div>
                     {% endif %}
-                </fieldset>
-                <button type="submit" class="btn btn-navbar">Submit</button>
-              </form>
-        </div>
-    </div>
-    <div class="row">
-        {% for item in products %}
-        <div class="col-4 mt-5">
-            <p>Product Name: <br>{{ item.product.name }}</p>
-            <p>Amount: {{ item.quantity }}</p>
-            <p>Price per Product: {{ item.product.price }}$</p>
-            <p>Total Price: {{ item.quantity|mul:item.product.price }}$</p>
-            <p>Product ID: {{ item.product_id }}</p>
-        </div>
-        {% endfor %}
-    </div>
-    <div class="row">
-        <div class="col">
-            <hr>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <p>Total Cost before discount: {{ total_price }}</p>
-            <p>Total Cost after discount: {{ total }}</p>
-            <p>Total Items: {{ total_products }}</p>
-        </div>
-        <div class="col">
-            <p>Total Saved: {{ total_saved }}</p>
-            <p>Total Saved Items: {{ product_saved }}</p>
+                    {% endfor %}
+                    <div class="form-group input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text"><i class="fa fa-check"></i></span>
+                          <span class="input-group-text">Save Info</i></span>
+                        </div>
+                        <input name="save_info" class="form-control" type="checkbox" id="save_info">
+                      </div>
+                </div>
+                {% if form.errors %}
+                <ul class="mb-2">
+                    {% for field in form %}
+                    {% for error in field.errors %}
+                    <li>{{ error|escape }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    <li>{{ error|escape }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <hr class="mb-4">
+                <button class="btn btn-info btn-lg btn-block" type="submit">Continue to checkout</button>
+            </form>
         </div>
     </div>
 </div>

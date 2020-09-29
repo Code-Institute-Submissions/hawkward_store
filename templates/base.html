@@ -164,7 +164,7 @@
                             {% endif %}
                             <li class="nav-item mx-2 my-2">
                                 <a href="#profile" class="nav-link btn btn-navbar" data-toggle="collapse"
-                                    aria-expanded="false" class="dropdown-toggle">Profile</a>
+                                    aria-expanded="false" aria-controls="collapseExample" class="dropdown-toggle">Profile</a>
                             </li>
                             <ul class="collapse list-unstyled" id="profile">
                                 {% if request.user.is_authenticated %}
@@ -204,7 +204,7 @@
             {% block content %}
             {% endblock %}
             <button class="btn btn-navbar scroll-to-top-btn" onclick="scrollToTop()" id="myBtn"
-                title="Go to top">Top</button>
+                title="Go to top">Return to Top</button>
 
         </div>
     </div>

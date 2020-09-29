@@ -17,8 +17,18 @@
     </div>
     <div class="row">
         <div class="col-8">
-            <form method="POST" action="{% url 'edit_product' product.id %}" class="form mb-2" enctype="multipart/form-data">
+            <form method="POST" action="{% url 'edit_product' product.id %}" class="form mb-2"
+                enctype="multipart/form-data">
                 {% csrf_token %}
+                <div class="col mb-5">
+                    {% if product.image %}
+                    <img src="{{ product.image }}" alt="product_image">
+                    {% elif product.image_url %}
+                    <img src="{{ product.image_url }}" alt="product_image">
+                    {% else %}
+                    <img src="{{ MEDIA_URL }}noimage.png" alt="product_image">
+                    {% endif %}
+                </div>
                 {% for field in productForm %}
                 <p>{{ field }}</p>
                 <p>{{ field.name }}</p>
