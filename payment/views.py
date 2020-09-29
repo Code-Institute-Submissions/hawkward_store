@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404, HttpResponse
+from decimal import Decimal
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -61,6 +62,20 @@ def check_for_free_items(request):
                 counter = int(quantity)
                 giftcard_q = Giftcards(
                     user=user, product_id=product_id, product_name=product_name, counter=counter)
+                if giftcard_q.counter >= 7:
+                    free_items = request.session.get('free_items', {})
+                    if not free_items:
+                        free_items[f'{product_id}'] = 1
+                    else:
+                        free_items[f'{product_id}'] += 1
+                    new_counter = int(giftcard_q.counter - 7)
+                    giftcard_q.counter = new_counter
+                    while giftcard_q.counter >= 7:
+                        new_counter = int(giftcard_q.counter - 7)
+                        giftcard_q.counter = new_counter
+                        free_items[f'{product_id}'] += 1
+                        request.session['free_items'] = free_items
+                    request.session['free_items'] = free_items
                 giftcard_q.save()
     return redirect('payment')
 
@@ -82,13 +97,14 @@ def payment(request):
                 f'{product_id}': quantity,
             })
     total = int(total_price - total_saved)
-    request.session['total'] = total
     if total < 0:
         del request.session['free_items']
         del request.session['total']
         return redirect('products')
-    stripe_total = round(total * 100)
+    stripe_total = round((total * 100), 2)
+    total = Decimal(stripe_total / 100)
     request.session['stripe_total'] = stripe_total
+    total = round(total, 2)
     order_form = OrderForm()
     context = {
         'total': total,
@@ -160,6 +176,7 @@ def payment_method(request):
                 create_user_profile = UserProfileForm(user_form)
                 if create_user_profile.is_valid():
                     create_user_profile.save()
+    del request.session['stripe_total']
     customer_email = order.email
     secret_key = payment_intent.client_secret
     payment_intent_id = payment_intent.id
@@ -240,6 +257,8 @@ def payment_backend(request):
                     giftcard_q_delete.counter = old_counter
                     giftcard_q_delete.save()
                 del request.session['free_items']
+        del request.session['shopping_bag']
+        del request.session['free_items']
 
         return redirect('payment_success')
     except Exception as e:
@@ -267,7 +286,9 @@ def payment_success(request):
             body,
             settings.DEFAULT_FROM_EMAIL,
             [cust_email]
-        )
+        )    
+        del request.session['shopping_bag']
+        del request.session['free_items']
     return render(request, 'payment/payment_success.html')
 
 

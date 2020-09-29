@@ -11,13 +11,16 @@ def add_item_to_bag(request, product_id):
     quantity = 1
     shopping_bag = request.session.get('shopping_bag', {})
 
-    if request.POST:
+    if request.POST:        
+        shopping_bag = request.session.get('shopping_bag', {})
         quantity = int(request.POST['quantity'])
         if product_id in list(shopping_bag.keys()):
             shopping_bag[product_id] += quantity
         else:
-            shopping_bag[product_id] = quantity
-
+            shopping_bag[product_id] = quantity        
+        request.session['shopping_bag'] = shopping_bag
+        return redirect('shopping_bag')
+        
     if product_id in list(shopping_bag.keys()):
         shopping_bag[product_id] += quantity
     else:
@@ -31,8 +34,7 @@ def delete_item_from_bag(request, product_id):
     shopping_bag.pop(product_id)
     
     request.session['shopping_bag'] = shopping_bag
-    return redirect('shopping_bag')    
-    shopping_bag[product_id] = 0
+    return redirect('shopping_bag')
 
 def change_quantity(request, product_id):
     shopping_bag = request.session['shopping_bag']
