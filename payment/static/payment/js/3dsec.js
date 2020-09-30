@@ -18,5 +18,4 @@ function _3dsec(stripe_publishable_key, pi_secret) {
       }
     });
   }); // DOMContentLoaded
-
 }

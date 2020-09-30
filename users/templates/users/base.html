@@ -11,7 +11,6 @@
             {% endif %}
             <div>Feel free to update or create your profile down below!</div>
         </div>
-
     </div>
     <div class="row mb-5">
         <div class="mb-5 col-12 col-lg-6">
@@ -128,7 +127,7 @@
             {% else %}
             <div class="row">
                 <div class="col">
-                    <p>You have no active subscription.</p>                    
+                    <p>You have no active subscription.</p>
                     <p>When you sign up with us you will get a free item each month!</p>
                 </div>
                 <div class="col">
@@ -163,7 +162,8 @@
                         <div class="row">
                             <div class="col-12 text-center">Current: {{ giftcard.counter }}/7</div>
                             <div class="col-12 text-center">
-                                <a href="{% url 'product_information' giftcard.product_id %}" class="btn btn-navbar">Go to product!</a>
+                                <a href="{% url 'product_information' giftcard.product_id %}" class="btn btn-navbar">Go
+                                    to product!</a>
                             </div>
                         </div>
                     </div>
@@ -182,10 +182,10 @@
                     <div class="card">
                         <div class="card-header text-center" id="h{{ order.order_number }}">
                             <h2 class="mb-0">
-                                <button class="btn btn-navbar border-0" style="max-width: 100%;" type="button" data-toggle="collapse"
-                                    data-target="#c{{ order.order_number }}" aria-expanded="false"
-                                    aria-controls="c{{ order.order_number }}">
-                                    <div class="text-truncate">Order Number: <br>{{ order.order_number }}</div>                                    
+                                <button class="btn btn-navbar border-0" style="max-width: 100%;" type="button"
+                                    data-toggle="collapse" data-target="#c{{ order.order_number }}"
+                                    aria-expanded="false" aria-controls="c{{ order.order_number }}">
+                                    <div class="text-truncate">Order Number: <br>{{ order.order_number }}</div>
                                 </button>
                             </h2>
                         </div>

@@ -2,6 +2,7 @@ from django.conf import settings
 from products.models import ProductsStore
 from django.shortcuts import get_object_or_404
 
+
 def shopping_bag_items(request):
 
     products = []

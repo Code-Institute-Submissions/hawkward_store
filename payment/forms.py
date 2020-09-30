@@ -9,4 +9,4 @@ class OrderForm(forms.ModelForm):
             'first_name', 'last_name', 'email',
             'country', 'street_address', 'city',
             'postcode', 'phone_number',
-            )
+        )

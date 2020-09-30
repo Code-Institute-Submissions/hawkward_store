@@ -44,7 +44,8 @@
                                                 Items</a></button>
                                     </div>
                                     <div class="col-12">
-                                        <input type="number" min="1" max="99" value="{{ item.quantity }}" name="quantity" id="quantity" class="mb-2">
+                                        <input type="number" min="1" max="99" value="{{ item.quantity }}"
+                                            name="quantity" id="quantity" class="mb-2">
                                         <button type="submit" class="btn btn-navbar text-rigth">Change Amount</button>
                                     </div>
                                 </div>
@@ -58,7 +59,8 @@
         <div class="col-12 col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <button class="btn btn-info btn-lg btn-block card-title"><a href="{% url 'check_for_free_items' %}">Continue</a></button>
+                    <button class="btn btn-info btn-lg btn-block card-title"><a
+                            href="{% url 'check_for_free_items' %}">Continue</a></button>
                     <p class="card-text">Total Cost: ${{ total_price }}</p>
                     <p class="card-text">Total Items: {{ total_products }}</p>
                 </div>

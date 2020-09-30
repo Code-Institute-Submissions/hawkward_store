@@ -26,6 +26,7 @@ import json
 
 
 def check_for_free_items(request):
+    ''' checking the giftcard system and adding free items to the session '''
     if request.user.is_authenticated:
         shopping_bag = request.session['shopping_bag']
         if not shopping_bag:
@@ -82,6 +83,7 @@ def check_for_free_items(request):
 
 
 def payment(request):
+    ''' rendering the payment, order form, billing information '''
     shopping_bag = request.session.get('shopping_bag', {})
     free_items = request.session.get('free_items', {})
     if not shopping_bag:
@@ -135,13 +137,14 @@ def payment(request):
 
 @require_POST
 def payment_method(request):
+    ''' taking payment form/billing information, creating an order and creating a stripe intent '''
     stripe_public_key = settings.STRIPE_PUBLIC_KEY
     stripe_secret_key = settings.STRIPE_SECRET_KEY
     stripe.api_key = stripe_secret_key
     currency = settings.STRIPE_CURRENCY
     amount = request.session['stripe_total']
-    if not amount or amount <= 0:
-        del request.session['stripe_total']        
+    if not amount or amount < 0:
+        del request.session['stripe_total']
         something = "Something went wrong! Please try Again!"
         context = {
             'something': something
@@ -223,6 +226,7 @@ def payment_method(request):
 
 @require_POST
 def payment_backend(request):
+    ''' trying to confirm stripe intent and creating order. redirecting to 3dsecure if needed or going to error page '''
     shopping_bag = request.session.get('shopping_bag', {})
     free_items = request.session.get('free_items', {})
     stripe_secret_key = settings.STRIPE_SECRET_KEY
@@ -321,6 +325,7 @@ def payment_backend(request):
 
 @csrf_exempt
 def payment_success(request):
+    ''' Payment confirm success saving either subscription or order '''
     if request.method == 'POST':
         subscription = request.POST['subscription']
         if subscription == 'yes':
@@ -367,6 +372,7 @@ def payment_success(request):
 
 @login_required
 def subscription(request):
+    ''' creating subscription information and letting user choose what plan '''
     user_subscription = UserSubscriptions.objects.filter(
         user=request.user.username)
     if user_subscription:
@@ -383,6 +389,7 @@ def subscription(request):
 @require_POST
 @login_required
 def subscription_payment_method(request):
+    ''' creating subscription payment intent with information from previous view '''
     user_subscription = UserSubscriptions.objects.filter(
         user=request.user.username)
     if user_subscription:
@@ -439,6 +446,7 @@ def subscription_payment_method(request):
 @require_POST
 @login_required
 def subscription_backend(request):
+    ''' confirming subscription intent and either redirecting to 3dsecure, errorpage or succcess page '''
     stripe_secret_key = settings.STRIPE_SECRET_KEY
     stripe.api_key = stripe_secret_key
     payment_intent_id = request.POST['payment_intent_id']
@@ -513,6 +521,7 @@ def subscription_backend(request):
 @require_POST
 @csrf_exempt
 def payment_error(request):
+    ''' handles all 3dsecure errors '''
     order_number = request.POST['order']
     subscription = request.POST['subscription']
     customer_id = request.POST['customer_id']
@@ -533,6 +542,7 @@ def payment_error(request):
 
 @login_required
 def delete_subscription(request):
+    ''' deleting a subscription '''
     stripe_secret_key = settings.STRIPE_SECRET_KEY
     stripe.api_key = stripe_secret_key
     usersubscription = UserSubscriptions.objects.get(

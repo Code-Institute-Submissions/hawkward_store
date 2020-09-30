@@ -189,7 +189,7 @@ ul.CTAs a {
   margin: auto;
   display: block;
   max-width: 10rem;
-  height: auto;
+  max-height: 11rem;
 }
 
 .card .btn {

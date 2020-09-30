@@ -83,14 +83,14 @@
                     </div>
                     {% endif %}
                 </div>
-                {% if form.errors %}
+                {% if order_form.errors %}
                 <ul class="mb-2">
-                    {% for field in form %}
+                    {% for field in order_form %}
                     {% for error in field.errors %}
                     <li>{{ error|escape }}</li>
                     {% endfor %}
                     {% endfor %}
-                    {% for error in form.non_field_errors %}
+                    {% for error in order_form.non_field_errors %}
                     <li>{{ error|escape }}</li>
                     {% endfor %}
                 </ul>

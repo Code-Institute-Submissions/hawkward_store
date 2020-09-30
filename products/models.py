@@ -15,6 +15,7 @@ class Category(models.Model):
     def get_friendly_name(self):
         return self.friendly_name
 
+
 class Animals(models.Model):
 
     class Meta:
@@ -28,6 +29,7 @@ class Animals(models.Model):
 
     def get_friendly_name(self):
         return self.friendly_name
+
 
 class ProductsStore(models.Model):
     category = models.ForeignKey(

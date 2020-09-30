@@ -46,6 +46,7 @@ def users(request):
 
 @login_required
 def update_or_create_user(request):
+    """ add or update a user to userprofiles model """
     if request.method == 'POST':
         user = User.objects.get(username=request.user)
         user_profile = UserProfile.objects.filter(user=user)

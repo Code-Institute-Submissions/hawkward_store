@@ -74,6 +74,7 @@ def products(request):
 
 
 def product_information(request, product_id):
+    """ Products information view """
     product = get_object_or_404(ProductsStore, pk=product_id)
     context = {
         'product': product
@@ -83,6 +84,7 @@ def product_information(request, product_id):
 
 @login_required
 def product_management(request):
+    """ Products management view """
     template = 'products/product_management.html'
     context = {
         'ProductForm': ProductsStoreForm,
@@ -94,6 +96,7 @@ def product_management(request):
 
 @login_required
 def add_product(request):
+    """ Adding a product view """
     if request.method == 'POST':
         form = ProductsStoreForm(request.POST, request.FILES)
         if form.is_valid():
@@ -103,6 +106,7 @@ def add_product(request):
 
 @login_required
 def add_category(request):
+    """ Adding a category view """
     if request.method == 'POST':
         form = CategoryForm(request.POST, request.FILES)
         if form.is_valid():
@@ -112,6 +116,7 @@ def add_category(request):
 
 @login_required
 def add_animal(request):
+    """ Adding a animal view """
     if request.method == 'POST':
         form = AnimalsForm(request.POST, request.FILES)
         if form.is_valid():
@@ -145,6 +150,7 @@ def edit_product(request, product_id):
 
 @login_required
 def delete_product(request, product_id):
+    """ Deleting a Product from the Store """
     product = get_object_or_404(ProductsStore, pk=product_id)
     product.delete()
     return redirect('products')

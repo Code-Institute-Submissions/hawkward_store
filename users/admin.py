@@ -26,6 +26,7 @@ class UserProfileAdmin(admin.ModelAdmin):
         'postcode',
     )
 
+
 class UserSubscriptionsAdmin(admin.ModelAdmin):
     list_display = (
         'user',

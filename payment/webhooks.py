@@ -5,6 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 import stripe
+
+
 @require_POST
 @csrf_exempt
 def webhook_received(request):
@@ -13,7 +15,7 @@ def webhook_received(request):
     stripe_public_key = settings.STRIPE_PUBLIC_KEY
     stripe_secret_key = settings.STRIPE_SECRET_KEY
     webhook_secret = settings.STRIPE_WH_SECRET
-    
+
     request_data = json.loads(request.data)
 
     if webhook_secret:

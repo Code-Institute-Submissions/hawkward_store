@@ -16,6 +16,7 @@ class ProductsStoreAdmin(admin.ModelAdmin):
         'image_url',
     )
 
+
 class CategoryAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
@@ -23,12 +24,14 @@ class CategoryAdmin(admin.ModelAdmin):
         'name',
     )
 
+
 class AnimalsAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
         'friendly_name',
         'name',
     )
+
 
 admin.site.register(ProductsStore, ProductsStoreAdmin)
 admin.site.register(Category, CategoryAdmin)

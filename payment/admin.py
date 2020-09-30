@@ -2,6 +2,8 @@ from django.contrib import admin
 from .models import Order, OrderItems
 
 # Register your models here.
+
+
 class OrderItemsAdminInline(admin.TabularInline):
     model = OrderItems
     readonly_fields = ('products_total',)

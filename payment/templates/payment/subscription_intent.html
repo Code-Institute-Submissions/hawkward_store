@@ -37,8 +37,8 @@
                             <div id="card-element" class="form-control">
                                 <!-- A Stripe Element will be inserted here. -->
                             </div>
-                            <input type="text" value="{{ payment_intent_id }}" name="payment_intent_id">
-                            <input type="text" value="{{ stripe_plan_id }}" name="stripe_plan_id">
+                            <input type="hidden" value="{{ payment_intent_id }}" name="payment_intent_id">
+                            <input type="hidden" value="{{ stripe_plan_id }}" name="stripe_plan_id">
                             <button id="submit-button"
                                 class="subscribe btn btn-primary btn-block rounded-pill shadow-sm">Confirm</button>
                         </form>

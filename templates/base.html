@@ -4,7 +4,6 @@
 <html lang="en">
 
 <head>
-
     {% block meta %}
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta charset="utf-8">
@@ -39,7 +38,6 @@
                     <img src="{{ MEDIA_URL }}hawkward_logo.jpg" width="250" height="150" alt="logo" />
                 </a>
             </div>
-
             <ul class="list-unstyled" id="sidebarUl">
                 <p class="text-center sidebar-heading">Hawkward Store</p>
                 <li class="text-center">
@@ -139,14 +137,13 @@
                 </li>
             </ul>
         </nav>
-
         <!-- Page Content  -->
         <div id="content">
             <nav class="navbar navbar-expand-lg">
                 <div class="container-fluid">
                     <button type="button" id="sidebarCollapse" class="btn btn-navbar">
                         <i class="fas fa-align-left"></i>
-                        <span>Show Products</span>
+                        <span>Show Menu</span>
                     </button>
                     <div class="d-flex col d-lg-none justify-content-center">Hawkward Store</div>
                     <button class="btn btn-navbar my-2 d-inline-block d-lg-none ml-auto" type="button"
@@ -154,7 +151,6 @@
                         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <i class="fas fa-align-justify"></i>
                     </button>
-
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul id="navUl" class="navbar-nav ml-auto">
                             {% if request.user.is_superuser %}
@@ -164,7 +160,8 @@
                             {% endif %}
                             <li class="nav-item mx-2 my-2">
                                 <a href="#profile" class="nav-link btn btn-navbar" data-toggle="collapse"
-                                    aria-expanded="false" aria-controls="collapseExample" class="dropdown-toggle">Profile</a>
+                                    aria-expanded="false" aria-controls="collapseExample"
+                                    class="dropdown-toggle">Profile</a>
                             </li>
                             <ul class="collapse list-unstyled" id="profile">
                                 {% if request.user.is_authenticated %}
@@ -201,11 +198,12 @@
 
             {% block page_header %}
             {% endblock %}
+
             {% block content %}
             {% endblock %}
-            <button class="btn btn-navbar scroll-to-top-btn" onclick="scrollToTop()" id="myBtn"
-                title="Go to top">Return to Top</button>
 
+            <button class="btn btn-navbar scroll-to-top-btn" onclick="scrollToTop()" id="myBtn" title="Go to top">Return
+                to Top</button>
         </div>
     </div>
 
@@ -226,8 +224,6 @@
 
     {% block postloadjs %}
     {% endblock %}
-
-
 </body>
 
 </html>
