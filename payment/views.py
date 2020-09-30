@@ -222,68 +222,86 @@ def payment_backend(request):
     free_items = request.session.get('free_items', {})
     stripe_secret_key = settings.STRIPE_SECRET_KEY
     stripe.api_key = stripe_secret_key
+    if request.POST['payment_method_id']:
+        payment_method_id = request.POST['payment_method_id']
+    else:
+        something = "Something went wrong! Please try Again!"
+        context = {
+            'something': something
+        }
+        return render(request, 'payment/wherrors.html', context)
     payment_intent_id = request.POST['payment_intent_id']
-    payment_method_id = request.POST['payment_method_id']
     order_number = request.POST['order_number']
-    order = get_object_or_404(Order, order_number=order_number)
-    try:
-        ret = stripe.PaymentIntent.confirm(
-            payment_intent_id,
-            payment_method=payment_method_id
-        )
-
-        if ret.status == 'requires_payment_method':
-            order.delete()
-            return redirect('shopping_bag')
-        if ret.status == 'requires_action':
-            pi = stripe.PaymentIntent.retrieve(
-                payment_intent_id
+    order = Order.objects.filter(order_number=order_number)
+    if order:
+        order = Order.objects.filter(order_number=order_number)[0]
+        try:
+            ret = stripe.PaymentIntent.confirm(
+                payment_intent_id,
+                payment_method=payment_method_id
             )
-            context = {}
 
-            context['payment_intent_secret'] = pi.client_secret
-            context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLIC_KEY
-            context['order'] = order.order_number
-            context['cust_email'] = request.POST['customer_email']
-            return render(request, 'payment/3dsec.html', context)
+            if ret.status == 'requires_payment_method':
+                order.delete()
+                return redirect('shopping_bag')
+            if ret.status == 'requires_action':
+                pi = stripe.PaymentIntent.retrieve(
+                    payment_intent_id
+                )
+                context = {}
 
-        cust_email = request.POST['customer_email']
-        subject = render_to_string(
-            'payment/confirmation_emails/confirmation_email_subject.txt',
-            {'order': order})
-        body = render_to_string(
-            'payment/confirmation_emails/confirmation_email_body.txt',
-            {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL})
-        send_mail(
-            subject,
-            body,
-            settings.DEFAULT_FROM_EMAIL,
-            [cust_email]
-        )
-        ''' reset giftcard to old state '''
-        for product_id, quantity in shopping_bag.items():
-            product = get_object_or_404(ProductsStore, pk=product_id)
-            if product.has_giftcard == True:
-                giftcard_q_delete = Giftcards.objects.filter(
-                    Q(product_id=product_id) & Q(user=request.user))
-                if giftcard_q_delete:
+                context['payment_intent_secret'] = pi.client_secret
+                context['STRIPE_PUBLISHABLE_KEY'] = settings.STRIPE_PUBLIC_KEY
+                context['order'] = order.order_number
+                context['cust_email'] = request.POST['customer_email']
+                return render(request, 'payment/3dsec.html', context)
+
+            cust_email = request.POST['customer_email']
+            subject = render_to_string(
+                'payment/confirmation_emails/confirmation_email_subject.txt',
+                {'order': order})
+            body = render_to_string(
+                'payment/confirmation_emails/confirmation_email_body.txt',
+                {'order': order, 'contact_email': settings.DEFAULT_FROM_EMAIL})
+            send_mail(
+                subject,
+                body,
+                settings.DEFAULT_FROM_EMAIL,
+                [cust_email]
+            )
+            ''' reset giftcard to old state '''
+            for product_id, quantity in shopping_bag.items():
+                product = get_object_or_404(ProductsStore, pk=product_id)
+                if product.has_giftcard == True:
                     giftcard_q_delete = Giftcards.objects.filter(
-                        Q(product_id=product_id) & Q(user=request.user))[0]
-                    old_counter = int(giftcard_q_delete.counter + quantity)
-                    while old_counter >= 7:
-                        old_counter = int(giftcard_q_delete.counter - 7)
-                    giftcard_q_delete.counter = old_counter
-                    giftcard_q_delete.save()
+                        Q(product_id=product_id) & Q(user=request.user))
+                    if giftcard_q_delete:
+                        giftcard_q_delete = Giftcards.objects.filter(
+                            Q(product_id=product_id) & Q(user=request.user))[0]
+                        old_counter = int(giftcard_q_delete.counter + quantity)
+                        while old_counter >= 7:
+                            old_counter = int(giftcard_q_delete.counter - 7)
+                        giftcard_q_delete.counter = old_counter
+                        giftcard_q_delete.save()
 
-        if 'shopping_bag' in request.session:
-            del request.session['shopping_bag']
-        if 'free_items' in request.session:
-            del request.session['free_items']
-            del request.session['total']
-        return redirect('payment_success')
-    except Exception as e:
-        order.delete()
-        return HttpResponse(content=e, status=400)
+            if 'shopping_bag' in request.session:
+                del request.session['shopping_bag']
+            if 'free_items' in request.session:
+                del request.session['free_items']
+                del request.session['total']
+            return redirect('payment_success')
+        except Exception as e:
+            if order:
+                order.delete()
+            context = {
+                'e': e
+            }
+            return render(request, 'payment/wherrors.html', context)
+    something = "Something went wrong! Please try Again!"
+    context = {
+        'something': something
+    }
+    return render(request, 'payment/wherrors.html', context)
 
 
 @csrf_exempt
@@ -291,7 +309,11 @@ def payment_success(request):
     if request.method == 'POST':
         subscription = request.POST['subscription']
         if subscription == 'yes':
-            return render(request, 'payment/subscription_success.html')
+            success = "You subscribed Successfully!"
+            context = {
+                'success': success,
+            }
+            return render(request, 'payment/payment_success.html', context)
         order_number = request.POST['order']
         order = Order.objects.get(order_number=order_number)
         cust_email = request.POST['cust_email']
@@ -307,11 +329,20 @@ def payment_success(request):
             settings.DEFAULT_FROM_EMAIL,
             [cust_email]
         )
-
         del request.session['stripe_total']
         del request.session['shopping_bag']
         del request.session['free_items']
-    return render(request, 'payment/payment_success.html')
+        success = "Your order was validated and payment was Confirmed!"
+        context = {
+            'success': success,
+            'order': order,
+        }
+        return render(request, 'payment/payment_success.html', context)
+    something = "Something went wrong! Sorry for the invoncenience!"
+    context = {
+        'something': something,
+    }
+    return render(request, 'payment/wherrors.html', context)
 
 
 @login_required
@@ -384,7 +415,11 @@ def subscription_backend(request):
     if request.POST['payment_method_id']:
         payment_method_id = request.POST['payment_method_id']
     else:
-        return redirect('users')
+        something = "Something went wrong! Please try Again!"
+        context = {
+            'something': something
+        }
+        return render(request, 'payment/wherrors.html', context)
     stripe_plan_id = request.POST['stripe_plan_id']
     user_subscription = UserSubscriptions.objects.filter(
         user=request.user.username)
