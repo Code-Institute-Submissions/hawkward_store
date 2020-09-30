@@ -107,7 +107,23 @@ def payment(request):
     total = Decimal(stripe_total / 100)
     request.session['stripe_total'] = stripe_total
     total = round(total, 2)
-    order_form = OrderForm()
+    if request.user.is_authenticated:
+        try:
+            userprofile = UserProfile.objects.get(user=request.user)
+            order_form = OrderForm(initial={
+                'first_name': userprofile.first_name,
+                'last_name': userprofile.last_name,
+                'email': userprofile.email,
+                'country': userprofile.country,
+                'street_address': userprofile.street_address,
+                'city': userprofile.city,
+                'postcode': userprofile.postcode,
+                'phone_number': userprofile.phone_number,
+            })
+        except UserProfile.DoesNotExist:
+            order_form = OrderForm()
+    else:
+        order_form = OrderForm()
     context = {
         'total': total,
         'product_saved': product_saved,
@@ -162,21 +178,28 @@ def payment_method(request):
                 quantity=quantity,
             )
             order_item.save()
-        if 'save_info' in request.POST:
+        if 'save-info' in request.POST:
+            print('hello')
             if request.user.is_authenticated:
                 user = User.objects.get(username=request.user)
-                user_form = {
-                    'first_name': order.first_name,
-                    'last_name': order.last_name,
-                    'email': order.email,
-                    'country': order.country,
-                    'street_address': order.street_address,
-                    'city': order.city,
-                    'postcode': order.postcode,
-                    'phone_number': order.phone_number,
-                }
-                create_user_profile = UserProfileForm(user_form)
-                if create_user_profile.is_valid():
+                user_profile = UserProfile.objects.filter(user=user)
+                if user_profile:
+                    user_profile = UserProfile.objects.filter(user=user)[0]
+                    user_profile.first_name = order.first_name
+                    user_profile.last_name = order.last_name
+                    user_profile.email = order.email
+                    user_profile.country = order.country
+                    user_profile.street_address = order.street_address
+                    user_profile.city = order.city
+                    user_profile.postcode = order.postcode
+                    user_profile.phone_number = order.phone_number
+                    user_profile.save()
+                else:
+                    create_user_profile = UserProfile(
+                        user=user, first_name=order.first_name, last_name=order.last_name,
+                        email=order.email, country=order.country, street_address=order.street_address,
+                        city=order.city, postcode=order.postcode, phone_number=order.phone_number,
+                    )
                     create_user_profile.save()
     customer_email = order.email
     secret_key = payment_intent.client_secret
@@ -251,7 +274,7 @@ def payment_backend(request):
                         old_counter = int(giftcard_q_delete.counter - 7)
                     giftcard_q_delete.counter = old_counter
                     giftcard_q_delete.save()
-                
+
         if 'shopping_bag' in request.session:
             del request.session['shopping_bag']
         if 'free_items' in request.session:
@@ -284,7 +307,7 @@ def payment_success(request):
             settings.DEFAULT_FROM_EMAIL,
             [cust_email]
         )
-        
+
         del request.session['stripe_total']
         del request.session['shopping_bag']
         del request.session['free_items']
@@ -389,6 +412,11 @@ def subscription_backend(request):
             ret = stripe.PaymentIntent.confirm(
                 latest_invoice.payment_intent,
             )
+            if ret.status == 'succeeded':
+                new_subscription.s_id = s.id
+                new_subscription.save()
+                return render(request, 'payment/subscription_success.html')
+
             if ret.status == 'requires_payment_method':
                 stripe.Customer.delete(customer.id)
                 new_subscription.delete()
@@ -408,10 +436,6 @@ def subscription_backend(request):
                 context['customer_id'] = customer.id
 
                 return render(request, 'payment/3dsec.html', context)
-
-            new_subscription.s_id = s.id
-            new_subscription.save()
-            return render(request, 'payment/subscription_success.html')
         except Exception as e:
             context = {
                 'e': e

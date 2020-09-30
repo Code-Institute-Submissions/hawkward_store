@@ -44,7 +44,7 @@ a, a:hover, a:focus {
 
 .navbar {
   padding: 15px 10px;
-  background-color:rgba(30, 130, 76, 0.7);
+  background-color: rgba(30, 130, 76, 0.7);
   border-radius: 5px;
   margin-bottom: 40px;
 }
@@ -71,6 +71,11 @@ a, a:hover, a:focus {
 }
 
 /* Sidebar styling */
+
+#q {
+  width: 200px;
+  margin-left: 25px;
+}
 
 #sidebar {
   min-width: 250px;
@@ -194,6 +199,19 @@ ul.CTAs a {
   right: 30px;
 }
 
+#id-save-info {
+  /* Double-sized Checkboxes */
+  -ms-transform: scale(2);
+  /* IE */
+  -moz-transform: scale(2);
+  /* FF */
+  -webkit-transform: scale(2);
+  /* Safari and Chrome */
+  -o-transform: scale(2);
+  /* Opera */
+  padding: 10px;
+  margin-top: 10px;
+}
 
 /* Media Queries */
 

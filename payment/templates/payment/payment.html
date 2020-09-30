@@ -48,20 +48,40 @@
                     {% if field.name == 'first_name' %}
                     <div class="col-md-6 mb-3">
                         <input type="{{ field.type }}" name="{{ field.name }}" id="id_{{ field.name }}"
-                            maxlength="{{field.field.max_length}}" placeholder="First Name" class="form-control" required>
+                            maxlength="{{field.field.max_length}}" placeholder="First Name"
+                            value="{% if field.value %}{{ field.value }}{% endif %}" class="form-control" required>
                     </div>
                     {% elif field.name == 'last_name' %}
                     <div class="col-md-6 mb-3">
                         <input type="{{ field.type }}" name="{{ field.name }}" id="id_{{ field.name }}"
-                            maxlength="{{field.field.max_length}}" placeholder="First Name" class="form-control" required>
+                            maxlength="{{field.field.max_length}}" placeholder="Last Name"
+                            value="{% if field.value %}{{ field.value }}{% endif %}" class="form-control" required>
                     </div>
                     {% else %}
                     <div class="col-12 mb-3">
                         <input type="{{ field.type }}" name="{{ field.name }}" id="id_{{ field.name }}"
-                            maxlength="{{field.field.max_length}}" placeholder="{{ field.name }}" class="form-control" required>
+                            maxlength="{{field.field.max_length}}" placeholder="{{ field.name }}"
+                            value="{% if field.value %}{{ field.value }}{% endif %}" class="form-control" required>
                     </div>
                     {% endif %}
                     {% endfor %}
+                    {% if user.is_authenticated %}
+                    <div class="col-12 mb-3">
+                        <div class="form-group">
+                            <label class="form-check-label" for="id-save-info">Save to my
+                                profile</label>
+                            <input class="form-check-input ml-5" type="checkbox" id="id-save-info" name="save-info"
+                                checked>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-12 mb-3">
+                        <label class="form-check-label" for="id-save-info">
+                            <a class="text-info" href="{% url 'account_signup' %}">Create an account</a> or
+                            <a class="text-info" href="{% url 'account_login' %}">login</a> to save this information
+                        </label>
+                    </div>
+                    {% endif %}
                 </div>
                 {% if form.errors %}
                 <ul class="mb-2">

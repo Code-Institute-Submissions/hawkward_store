@@ -10,12 +10,12 @@ function card(stripe_public_key, customer_email) {
         fontSmoothing: 'antialiased',
         fontSize: '16px',
         '::placeholder': {
-          color: '#aab7c4'
+          color: '#272727'
         }
       },
       invalid: {
         color: '#fa755a',
-        iconColor: '#fa755a'
+        iconColor: '#fa755a',
       }
     };
 

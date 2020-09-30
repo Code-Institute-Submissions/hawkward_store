@@ -9,22 +9,46 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col">
-            <form action="{% url 'subscription_backend' %}" method="POST" id="subscription-form">
-                {% csrf_token %}
-                <label for="card-element">
-                    Credit or debit card
-                </label>
-                <div id="card-element">
-                    <!-- A Stripe Element will be inserted here. -->
+        <div class="col-lg-7 mx-auto">
+            <div class="bg-white rounded-lg shadow-sm p-5">
+                <!-- Credit card form tabs -->
+                <ul role="tablist" class="nav bg-light nav-pills rounded-pill nav-fill mb-3">
+                    <li class="nav-item">
+                        <a data-toggle="pill" href="#nav-tab-card" class="nav-link active rounded-pill">
+                            <i class="fa fa-credit-card"></i>
+                            Credit Card
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a data-toggle="pill" href="#nav-tab-paypal" class="nav-link rounded-pill">
+                            <i class="fa fa-paypal"></i>
+                            Paypal
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <!-- credit card info-->
+                    <div id="nav-tab-card" class="tab-pane fade show active">
+                        <div class="text-center">Please enter your card details below.</div>
+                        <form action="{% url 'subscription_backend' %}" method="POST" id="subscription-form">
+                            {% csrf_token %}
+                            <!-- Used to display form errors. -->
+                            <div id="card-errors" role="alert"></div>
+                            <div id="card-element" class="form-control">
+                                <!-- A Stripe Element will be inserted here. -->
+                            </div>
+                            <input type="text" value="{{ payment_intent_id }}" name="payment_intent_id">
+                            <input type="text" value="{{ stripe_plan_id }}" name="stripe_plan_id">
+                            <button id="submit-button"
+                                class="subscribe btn btn-primary btn-block rounded-pill shadow-sm">Confirm</button>
+                        </form>
+                    </div>
+                    <div id="nav-tab-paypal" class="tab-pane fade">
+                        <div class="text-center">Coming Soon!</div>
+                        <div class="text-center">We are sorry for the inconvenience!</div>
+                    </div>
                 </div>
-
-                <!-- Used to display form errors. -->
-                <div id="card-errors" role="alert"></div>
-                <input type="text" value="{{ payment_intent_id }}" name="payment_intent_id">
-                <input type="text" value="{{ stripe_plan_id }}" name="stripe_plan_id">
-                <button id="submit-button">Subscribe</button>
-            </form>
+            </div>
         </div>
     </div>
 </div>

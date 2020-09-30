@@ -18,7 +18,7 @@
     </div>
     {% if products %}
     <div class="row">
-        <div class="col-8">
+        <div class="col-12 col-md-8">
             {% for item in products %}
             <div class="card mb-3">
                 <div class="card-body">
@@ -33,28 +33,34 @@
                         </div>
                     </div>
                     <div class="col-12">
-                        <div class="card-text">
+                        <div class="card-text text-right">
                             <form action="{% url 'change_quantity' item.product_id %}" method="POST">
                                 {% csrf_token %}
-                                <input type="number" min="1" max="99" value="1" name="quantity" id="quantity">
-                                <button type="submit" class="btn btn-navbar">Change Amount</button>
+                                <div class="row text-center">
+                                    <div class="col-12 mb-2">
+                                        <button class="btn btn-navbar"><a
+                                                href="{% url 'delete_item_from_bag' item.product_id %}">Delete
+                                                all
+                                                Items</a></button>
+                                    </div>
+                                    <div class="col-12">
+                                        <input type="number" min="1" max="99" value="1" name="quantity" id="quantity" class="mb-2">
+                                        <button type="submit" class="btn btn-navbar text-rigth">Change Amount</button>
+                                    </div>
+                                </div>
                             </form>
                         </div>
-                    </div>
-                    <div class="col text-center">
-                        <button class="btn btn-navbar"><a href="{% url 'delete_item_from_bag' item.product_id %}">Delete
-                                all
-                                Items</a></button>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
-        <div class="col">
+        <div class="col-12 col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <button class="btn btn-navbar card-title"><a href="{% url 'check_for_free_items' %}">Continue to Payment</a></button>            
-                    <p class="card-text">Total Cost: {{ total_price }}</p>
+                    <button class="btn btn-navbar card-title"><a href="{% url 'check_for_free_items' %}">Continue to
+                            Payment</a></button>
+                    <p class="card-text">Total Cost: ${{ total_price }}</p>
                     <p class="card-text">Total Items: {{ total_products }}</p>
                 </div>
             </div>
