@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container base-content">
     <div class="row">
-        <div class="col">
+        <div class="col mt-5 ml-5">
             {% if product.image %}
             <img src="{{ product.image }}" alt="product_image">
             {% elif product.image_url %}
@@ -12,30 +12,40 @@
             <img src="{{ MEDIA_URL }}noimage.png" alt="product_image">
             {% endif %}
         </div>
-        <div class="col m-5">
-            <h5>Product Name:</h5>
-            <p>{{ product.name }}</p>
-            <h4>Information:</h4>
-            <p>{{ product.description }}</p>
-            <h4>Category:</h4>
-            <p>{{ product.category }}</p>
-            <h4>Price:</h4>
-            <p>${{ product.price }}</p>
-            <h4>Every 7nth free?:</h4>
-            {% if product.has_giftcard == True %}
-            <p>Yes</p>
-            {% elif product.has_giftcard == False %}
-            <p>No</p>
-            {% else %}
-            <p>No information given. Please Contact us for more information!</p>
-            {% endif %}
+        <div class="col mt-5">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Product Name:</h5>
+                    <p>{{ product.name }}</p>
+                </div>
+                <div class="card-body">
+                    <div class="card-text">
+                        <h5>Information:</h5>
+                        <p>{{ product.description }}</p>
+                        <h5>Category:</h5>
+                        <p>{{ product.category }}</p>
+                    </div>
+                    <div class="card-text">
+                        <h5>Price:</h5>
+                        <p>${{ product.price }}</p>
+                        <h5>Giftcard Product?:</h5>
+                        {% if product.has_giftcard == True %}
+                        <p>Yes</p>
+                        {% elif product.has_giftcard == False %}
+                        <p>No</p>
+                        {% else %}
+                        <p>No information given. Please Contact us for more information!</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row mt-5">
         <div class="col">
             <form class="form d-flex" action="{% url 'add_item_to_bag' product.id %}" method="POST">
                 {% csrf_token %}
-                <div class="col mt-4">
+                <div class="col mt-5">
                     <button class="btn btn-navbar"><a href="{% url 'products' %}">Back to all Products</a></button>
                 </div>
                 <div class="col">
@@ -43,7 +53,7 @@
                     <input class="form-control" type="number" name="quantity" value="1" min="1" max="99"
                         id="id_qty_{{ product.id }}">
                 </div>
-                <div class="col mt-4 text-right">
+                <div class="col mt-5 text-right">
                     <input type="submit" class="btn btn-navbar" value="Add to Bag">
                 </div>
             </form>

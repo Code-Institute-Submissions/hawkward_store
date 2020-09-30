@@ -140,7 +140,13 @@ def payment_method(request):
     stripe.api_key = stripe_secret_key
     currency = settings.STRIPE_CURRENCY
     amount = request.session['stripe_total']
-
+    if not amount or amount <= 0:
+        del request.session['stripe_total']        
+        something = "Something went wrong! Please try Again!"
+        context = {
+            'something': something
+        }
+        return render(request, 'payment/wherrors.html', context)
     shopping_bag = request.session.get('shopping_bag', {})
     free_items = request.session.get('free_items', {})
     form = {
@@ -291,12 +297,19 @@ def payment_backend(request):
                 del request.session['stripe_total']
             if 'total' in request.session:
                 del request.session['total']
-            return redirect('payment_success')
+            success = "Successfully created Order!"
+            context = {
+                'success': success,
+                'order': order,
+            }
+            return render(request, 'payment/payment_success.html', context)
         except Exception as e:
             if order:
                 order.delete()
+            something = "Something went wrong! Please try Again!"
             context = {
-                'e': e
+                'e': e,
+                'something': something,
             }
             return render(request, 'payment/wherrors.html', context)
     something = "Something went wrong! Please try Again!"
@@ -489,8 +502,10 @@ def subscription_backend(request):
 
                 return render(request, 'payment/3dsec.html', context)
         except Exception as e:
+            something = "Something went wrong! Sorry for the invoncenience!"
             context = {
-                'e': e
+                'e': e,
+                'something': something,
             }
             return render(request, 'payment/wherrors.html', context)
 
@@ -504,14 +519,16 @@ def payment_error(request):
     if order_number:
         order = Order.objects.get(order_number=order_number)
         order.delete()
-        return redirect('shopping_bag')
     if subscription == 'yes':
         stripe.Customer.delete(customer.id)
         subscription = UserSubscriptions.objects.get(
             user=request.user.username)
         subscription.delete()
-        return redirect('users')
-    return redirect('index')
+    something = "Something went wrong! Sorry for the invoncenience! Please Try again!"
+    context = {
+        'something': something,
+    }
+    return render(request, 'payment/wherrors.html', context)
 
 
 @login_required
@@ -521,11 +538,23 @@ def delete_subscription(request):
     usersubscription = UserSubscriptions.objects.get(
         user=request.user.username)
     if not usersubscription:
-        return redirect('users')
+        something = "Something went wrong! Sorry for the invoncenience! Please Try again!"
+        context = {
+            'something': something,
+        }
+        return render(request, 'payment/wherrors.html', context)
     sub_id = usersubscription.s_id
     if not sub_id:
         usersubscription.delete()
-        return redirect('users')
+        something = "Subscription Deleted!"
+        context = {
+            'something': something,
+        }
+        return render(request, 'payment/wherrors.html', context)
     stripe.Subscription.delete(sub_id)
     usersubscription.delete()
-    return redirect('users')
+    success = "Successfully deleted Subscription!"
+    context = {
+        'success': success,
+    }
+    return render(request, 'payment/payment_success.html', context)

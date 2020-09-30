@@ -3,9 +3,55 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col">
-            {{ success }}
-            <p>PAYMENT SUCCESS!!</p>
+        <div class="col-8 offset-2">
+            <div class="card">
+                {% if success %}
+                <div class="card-body">
+                    <div class="card-text">
+                        <p>{{ success }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                {% if order %}
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-xl-6">
+                            <h5>Personal Details:</h5>
+                            <p>Username: <br>{{ order.user_profile }}</p>
+                            <p>Order First Name: <br>{{ order.first_name }}</p>
+                            <p>Order Last Name: <br>{{ order.last_name }}</p>
+                            <p>An email has been sent to: <br>{{ order.email }}</p>
+                        </div>
+                        <div class="col-12 col-xl-6">
+                            <h5>Shipping Details:</h5>
+                            <p>Country: {{ order.country }}</p>
+                            <p>Street Address: {{ order.street_address }}</p>
+                            <p>City: {{ order.city }}</p>
+                            <p>Postcode: {{ order.postcode }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <p>Total on Order: {{ order.total }}</p>
+                            <p>Order Number: {{ order.order_number }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <div class="card-text text-center">
+                        <div class="col mt-2">
+                            <a href="{% url 'users' %}" class="btn btn-navbar">Return to your page!</a>
+                        </div>
+                        <div class="col mt-2">
+                            <a href="{% url 'products' %}" class="btn btn-navbar">Return to all products!</a>
+                        </div>
+                        <div class="col mt-2">
+                            <a href="{% url 'shopping_bag' %}" class="btn btn-navbar">Return to shopping bag!</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

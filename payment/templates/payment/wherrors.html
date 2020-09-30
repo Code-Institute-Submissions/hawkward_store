@@ -4,19 +4,36 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col">
-            {% if e %}
-            {% for error in e %}
-            <p>{{ error }}</p>
-            {% endfor %}
-            {% endif %}
-            {% if something %}
-            <p>{{ something }}</p>
-            {% endif %}
-
-        </div>
-        <div class="col">
-            <a href="{% url 'users' %}" class="btn btn-navbar">Return to your page!</a>
+        <div class="col-6 offset-3">
+            <div class="card">
+                {% if e %}
+                <div class="card-body">
+                    <div class="card-text">
+                        <p>{{ e.error.message }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <div class="card-text">
+                        {% if something %}
+                        <p>{{ something }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card-text text-center">
+                        <div class="col mt-2">
+                            <a href="{% url 'users' %}" class="btn btn-navbar">Return to your page!</a>
+                        </div>
+                        <div class="col mt-2">
+                            <a href="{% url 'products' %}" class="btn btn-navbar">Return to all products!</a>
+                        </div>
+                        <div class="col mt-2">
+                            <a href="{% url 'shopping_bag' %}" class="btn btn-navbar">Return to shopping bag!</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -176,7 +176,34 @@ ul.CTAs a {
 .card .card-img-top {
   margin: auto;
   display: block;
-  width: 10rem;
+  width: auto;
+  height: auto;
+}
+
+#product-card.card {
+  width: auto;
+  height: 40rem;
+}
+
+#product-card.card .card-img-top {
+  margin: auto;
+  display: block;
+  max-width: 10rem;
+  height: auto;
+}
+
+.card .btn {
+  font-size: 0.8rem;
+}
+
+.card-text {
+  font-size: 0.9rem;
+}
+
+#product-card .card .card-img-top {
+  margin: auto;
+  display: block;
+  max-width: 10rem;
   height: auto;
 }
 
@@ -199,16 +226,13 @@ ul.CTAs a {
   right: 30px;
 }
 
+/* Double-sized Checkboxes */
+
 #id-save-info {
-  /* Double-sized Checkboxes */
   -ms-transform: scale(2);
-  /* IE */
   -moz-transform: scale(2);
-  /* FF */
   -webkit-transform: scale(2);
-  /* Safari and Chrome */
   -o-transform: scale(2);
-  /* Opera */
   padding: 10px;
   margin-top: 10px;
 }
