@@ -103,7 +103,7 @@ def payment(request):
         del request.session['free_items']
         del request.session['total']
         return redirect('products')
-    stripe_total = round((total * 100), 2)
+    stripe_total = round(total * 100)
     total = Decimal(stripe_total / 100)
     request.session['stripe_total'] = stripe_total
     total = round(total, 2)
@@ -179,7 +179,6 @@ def payment_method(request):
             )
             order_item.save()
         if 'save-info' in request.POST:
-            print('hello')
             if request.user.is_authenticated:
                 user = User.objects.get(username=request.user)
                 user_profile = UserProfile.objects.filter(user=user)
@@ -288,6 +287,9 @@ def payment_backend(request):
                 del request.session['shopping_bag']
             if 'free_items' in request.session:
                 del request.session['free_items']
+            if 'stripe_total' in request.session:
+                del request.session['stripe_total']
+            if 'total' in request.session:
                 del request.session['total']
             return redirect('payment_success')
         except Exception as e:
@@ -329,9 +331,14 @@ def payment_success(request):
             settings.DEFAULT_FROM_EMAIL,
             [cust_email]
         )
-        del request.session['stripe_total']
-        del request.session['shopping_bag']
-        del request.session['free_items']
+        if 'shopping_bag' in request.session:
+            del request.session['shopping_bag']
+        if 'free_items' in request.session:
+            del request.session['free_items']
+        if 'stripe_total' in request.session:
+            del request.session['stripe_total']
+        if 'total' in request.session:
+            del request.session['total']
         success = "Your order was validated and payment was Confirmed!"
         context = {
             'success': success,
@@ -375,6 +382,15 @@ def subscription_payment_method(request):
     plan1 = settings.STRIPE_PLAN_MONTHLY_ID
     plan2 = settings.STRIPE_PLAN_YEARLY_ID
     stripe.api_key = stripe_secret_key
+    if 'payment_intent_id' in request.session:
+        payment_intent_id = request.session['payment_intent_id']
+        try:
+            stripe.PaymentIntent.cancel(
+                payment_intent_id,
+            )
+            del request.session['payment_intent_id']
+        except:
+            del request.session['payment_intent_id']
     currency = settings.STRIPE_CURRENCY
     payment_method = 'card'
     customer_email = request.user.email
@@ -395,6 +411,7 @@ def subscription_payment_method(request):
     )
     secret_key = payment_intent.client_secret
     payment_intent_id = payment_intent.id
+    request.session['payment_intent_id'] = payment_intent_id
     context = {
         'secret_key': secret_key,
         'stripe_public_key': stripe_public_key,

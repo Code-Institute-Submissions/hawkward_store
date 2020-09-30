@@ -18,11 +18,11 @@
             <form method="POST" action="{% url 'add_product' %}" class="form mb-2" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% for field in ProductForm %}
-                <div class="row mb-2">
-                    <div class="col">
+                <div class="row mb-1">
+                    <div class="col-12 col-lg-4">
                         {{ field.name }}
                     </div>
-                    <div class="col-8">
+                    <div class="col-12 col-lg-8 text-sm-left text-lg-right">
                         {{ field }}
                     </div>
                 </div>
@@ -39,7 +39,7 @@
                     {% endfor %}
                 </ul>
                 {% endif %}
-                <div class="col d-flex">
+                <div class="col d-flex mt-3">
                     <button class="btn btn-navbar ml-auto" type="submit">Save</button>
                 </div>
             </form>
@@ -58,11 +58,11 @@
             <form method="POST" action="{% url 'add_animal' %}" class="form mb-2">
                 {% csrf_token %}
                 {% for field in AnimalsForm %}
-                <div class="row mb-2">
-                    <div class="col">
+                <div class="row mb-1">
+                    <div class="col-12 col-lg-4">
                         {{ field.name }}
                     </div>
-                    <div class="col ml-auto">
+                    <div class="col-12 col-lg-8 text-sm-left text-lg-right">
                         {{ field }}
                     </div>
                 </div>
@@ -93,16 +93,16 @@
             <hr>
         </div>
     </div>
-    <div class="row">
+    <div class="row mb-5">
         <div class="col">
             <form method="POST" action="{% url 'add_category' %}" class="form mb-2">
                 {% csrf_token %}
                 {% for field in CategoryForm %}
-                <div class="row mb-2">
-                    <div class="col">
+                <div class="row mb-1">
+                    <div class="col-12 col-lg-4">
                         {{ field.name }}
                     </div>
-                    <div class="col ml-auto">
+                    <div class="col-12 col-lg-8 text-sm-left text-lg-right">
                         {{ field }}
                     </div>
                 </div>

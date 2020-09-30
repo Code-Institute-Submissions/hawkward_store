@@ -3,8 +3,12 @@
 {% block content %}
 <div class="container base-content">
     <div class="row p-5 text-center">
+        {% if request.user.is_authenticated %}
+        <span>Congratulation! You have access to giftcards!</span>
+        {% else %}
         <span>If you select a Giftcard Product then every 7th purchase of the Product is for free! You must have an
             account to use this!</span>
+        {% endif %}
     </div>
     <div class="row">
         {% if products %}

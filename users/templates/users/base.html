@@ -3,83 +3,215 @@
 {% load mathfilters %}
 {% block content %}
 <div class="container">
-    <div class="row m-5">
-        <div class="col-6">
-            {% if user.is_authenticated %}
-            Hello, {{ user.username }}
-            {% if userprofile %}
-            {% for field in userprofile %}
-            <p>{{ field }}</p>
-            {% endfor %}
+    <div class="row mb-3">
+        <div class="col text-center">
+            <h3>Hello, {{ user.username }}</h3>
+            {% if success %}
+            <h3>{{ success }}</h3>
             {% endif %}
-            {% endif %}
+            <div>Feel free to update or create your profile down below!</div>
         </div>
-        <div class="col-6">
-            {% if subscription %}
-            {% if subscription.subscription == True %}
-            <p>You have an active subscription!</p>
-            <a href="{% url 'delete_subscription' %}" class="btn btn-navbar">Cancel your subscription</a>
-            {% else %}
-            <p>You have no current active subscription.</p>
-            <a href="{% url 'subscription' %}" class="btn btn-navbar">Set up a new subscription here!</a>
-            {% endif %}
-            {% else %}
-            <p>You have no active subscription.</p>
-            <a href="{% url 'subscription' %}" class="btn btn-navbar">Set up a subscription here!</a>
-            {% endif %}
+
+    </div>
+    <div class="row mb-5">
+        <div class="mb-5 col-12 col-lg-6">
+            <div class="col">
+                <h4 class="mb-3">Personal Details:</h4>
+                <form action="{% url 'update_or_create_user' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        {% for field in user_form %}
+                        {% if field.name == 'first_name' %}
+                        <div class="col-md-6 mb-3">
+                            <input type="{{ field.type }}" name="{{ field.name }}" id="id_{{ field.name }}"
+                                maxlength="{{field.field.max_length}}" placeholder="First Name"
+                                value="{% if field.value %}{{ field.value }}{% endif %}" class="form-control" required>
+                        </div>
+                        {% elif field.name == 'last_name' %}
+                        <div class="col-md-6 mb-3">
+                            <input type="{{ field.type }}" name="{{ field.name }}" id="id_{{ field.name }}"
+                                maxlength="{{field.field.max_length}}" placeholder="Last Name"
+                                value="{% if field.value %}{{ field.value }}{% endif %}" class="form-control" required>
+                        </div>
+                        {% else %}
+                        <div class="col-12 mb-3">
+                            <input type="{{ field.type }}" name="{{ field.name }}" id="id_{{ field.name }}"
+                                maxlength="{{field.field.max_length}}" placeholder="{{ field.name }}"
+                                value="{% if field.value %}{{ field.value }}{% endif %}" class="form-control" required>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% if form.errors %}
+                    <ul class="mb-2">
+                        {% for field in form %}
+                        {% for error in field.errors %}
+                        <li>{{ error|escape }}</li>
+                        {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                        <li>{{ error|escape }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    <div class="col">
+                        <button id="bottom" class="btn btn-info btn-lg btn-block" type="submit">Save Contact
+                            Information</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6">
+            <h4 class="mb-3 text-center">This month's free subscription item!</h4>
+            <div class="row justify-content-center">
+                <div class="col">
+                    <div class="card">
+                        <div class="m-auto">
+                            {% if product.image_url %}
+                            <a href="{% url 'product_information' product.id %}">
+                                <img class="card-img-top" src="{{ product.image_url }}" alt="{{ product.name }}">
+                            </a>
+                            {% else %}
+                            <a href="{% url 'product_information' product.id %}">
+                                <img class="card-img-top" src="{{ MEDIA_URL }}noimage.png" alt="{{ product.name }}">
+                            </a>
+                            {% endif %}
+                        </div>
+                        <div class="mb-0">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text text-truncate">{{ product.description }}</p>
+                            </div>
+                            <ul class="list-group list-group-flush text-right">
+                                <li class="list-group-item">Price: ${{ product.price }}</li>
+                                <li class="list-group-item">Category: {{ product.category.friendly_name }}</li>
+                            </ul>
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col text-center">
+                                        <a href="{% url 'product_information' product.id %}"
+                                            class="card-link btn btn-navbar">Product Info</a>
+                                    </div>
+                                </div>
+                                {% if request.user.is_superuser %}
+                                <div class="row m-2">
+                                    <div class="col-6 text-left">
+                                        <a href="{% url 'delete_product' product.id %}"
+                                            class="card-link btn btn-danger">Delete</a>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        <a href="{% url 'edit_product' product.id %}"
+                                            class="card-link btn btn-navbar">Edit</a>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="row m-5">
-        <div class="col">
-            {% if giftcards %}
-            <h4>You have previously bought and started a giftcard for:</h4>
-            {% for giftcard in giftcards %}
-            <div class="col m-5">
-                <div>Product Name: {{ giftcard.product_name }}</div>
-                <div>How many currently bought: {{ giftcard.counter }}</div>
-                <div>How many left to buy before next free item: {{ 7|sub:giftcard.counter }}</div>
+    <div class="row m-5 justify-content-center">
+        <div class="col mt-2">
+            {% if subscription %}
+            {% if subscription.subscription == True %}
+            <div class="row">
+                <div class="col">
+                    <p>You have an active subscription!</p>
+                </div>
+                <div class="col">
+                    <a href="{% url 'delete_subscription' %}" class="btn btn-navbar">Cancel your subscription</a>
+                </div>
             </div>
-            {% endfor %}
+            {% endif %}
+            {% else %}
+            <div class="row">
+                <div class="col">
+                    <p>You have no active subscription.</p>                    
+                    <p>When you sign up with us you will get a free item each month!</p>
+                </div>
+                <div class="col">
+                    <a href="{% url 'subscription' %}" class="btn btn-navbar">Set up a subscription here!</a>
+                </div>
+            </div>
             {% endif %}
         </div>
     </div>
     <div class="row">
-        <div class="col">
+        <div class="col text-center">
+            <h4>You have previously bought and started a giftcard for:</h4>
+        </div>
+    </div>
+    {% if giftcards %}
+    <div class="row mt-3 mb-3 justify-content-center">
+        {% for giftcard in giftcards %}
+        <div class="col-12 col-lg-6 col-xl-4">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col text-center">
+                                <h5>{{ giftcard.product_name }}</h5>
+                            </div>
+                        </div>
+                        <div class="row m-3 text-center">
+                            <div class="col-12">You still have to buy:</div>
+                            <div class="col-12">{{ 7|sub:giftcard.counter }} items</div>
+                            <div class="col-12">until your next free item!</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 text-center">Current: {{ giftcard.counter }}/7</div>
+                            <div class="col-12 text-center">
+                                <a href="{% url 'product_information' giftcard.product_id %}" class="btn btn-navbar">Go to product!</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
             {% if orders %}
             <div class="accordion" id="accordion">
                 {% for order in orders %}
-                <div class="card m-1">
-                    <div class="card-header btn-navbar text-center" id="h{{ order.order_number }}">
-                        <h2 class="mb-0">
-                            <button class="btn btn-navbar border-0" type="button" data-toggle="collapse"
-                                data-target="#c{{ order.order_number }}" aria-expanded="false"
-                                aria-controls="c{{ order.order_number }}">
-                                Order Number: {{ order.order_number }}
-                            </button>
-                        </h2>
-                    </div>
-                    <div id="c{{ order.order_number }}" class="collapse""
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header text-center" id="h{{ order.order_number }}">
+                            <h2 class="mb-0">
+                                <button class="btn btn-navbar border-0" style="max-width: 100%;" type="button" data-toggle="collapse"
+                                    data-target="#c{{ order.order_number }}" aria-expanded="false"
+                                    aria-controls="c{{ order.order_number }}">
+                                    <div class="text-truncate">Order Number: <br>{{ order.order_number }}</div>                                    
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="c{{ order.order_number }}" class="collapse""
                         data-parent=" #accordion" aria-labelledby="h{{ order.order_number }}">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-6">
-                                    <h5>Personal Details:</h5>
-                                    <p>Username: {{ order.user_profile }}</p>
-                                    <p>Order First Name: {{ order.first_name }}</p>
-                                    <p>Order Last Name: {{ order.last_name }}</p>
-                                    <p>Email: {{ order.email }}</p>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <h5>Personal Details:</h5>
+                                        <p>Username: {{ order.user_profile }}</p>
+                                        <p>Order First Name: {{ order.first_name }}</p>
+                                        <p>Order Last Name: {{ order.last_name }}</p>
+                                        <p>Email: {{ order.email }}</p>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <h5>Shipping Details:</h5>
+                                        <p>Country: {{ order.country }}</p>
+                                        <p>Street Address: {{ order.street_address }}</p>
+                                        <p>City: {{ order.city }}</p>
+                                        <p>Postcode: {{ order.postcode }}</p>
+                                    </div>
                                 </div>
-                                <div class="col-6">
-                                    <h5>Shipping Details:</h5>
-                                    <p>Country: {{ order.country }}</p>
-                                    <p>Street Address: {{ order.street_address }}</p>
-                                    <p>City: {{ order.city }}</p>
-                                    <p>Postcode: {{ order.postcode }}</p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12">
-                                    <p>Total on Order: {{ order.total }}</p>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <p>Total on Order: {{ order.total }}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

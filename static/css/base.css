@@ -132,8 +132,8 @@ a, a:hover, a:focus {
 }
 
 #sidebar ul li.active>a, a[aria-expanded="true"] {
-  color: #fff;
-  background: #1e824c;
+  color: #fff !important;
+  background: #03a678;
 }
 
 a[data-toggle="collapse"] {
@@ -230,5 +230,8 @@ ul.CTAs a {
   }
   .base-content {
     font-size: 1.1rem;
+  }
+  #accordion {
+    font-size: 0.8rem;
   }
 }

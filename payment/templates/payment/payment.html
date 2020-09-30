@@ -8,7 +8,7 @@
 
 {% block content %}
 <div class="container base-content">
-    <div class="row">
+    <div class="row mb-5">
         <div class="col-lg-4 order-lg-2 mb-4">
             <h4 class="d-flex justify-content-between align-items-center mb-3">
                 <span>Your cart</span>
@@ -97,6 +97,7 @@
                 {% endif %}
                 <hr class="mb-4">
                 <button class="btn btn-info btn-lg btn-block" type="submit">Continue to checkout</button>
+                <a href="{% url 'shopping_bag' %}" class="btn btn-danger btn-lg btn-block">Go back</a>
             </form>
         </div>
     </div>
